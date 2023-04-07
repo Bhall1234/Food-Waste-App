@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { auth } from '../firebase';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const LoginScreen = () => {
 
@@ -27,6 +27,7 @@ const LoginScreen = () => {
   return (
     <KeyboardAvoidingView style={styles.container} behavior="height">
       <View style={styles.innerContainer}>
+      <Text style = {styles.title}>Foodwaste Prototype</Text>
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Email"
@@ -114,5 +115,10 @@ const styles = StyleSheet.create({
     color: '#61DAFB',
     fontWeight: 'bold',
     fontSize: 18,
+  },
+  title:{
+    fontSize: 30,
+    color: '#61DAFB',
+    marginBottom: 40,
   },
 });
