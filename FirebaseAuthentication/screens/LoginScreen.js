@@ -7,11 +7,22 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import { auth } from '../firebase';
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 const LoginScreen = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');  
+
+    const handleSignup = () => {
+        createUserWithEmailAndPassword(auth, email, password)
+        .then(userCredentials => {
+            const user = userCredentials.user;
+            console.log('Registered with: ', user.email);
+        })
+        .catch(error => alert(error.message));
+    }
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="height">
@@ -35,7 +46,7 @@ const LoginScreen = () => {
           <TouchableOpacity onPress={() => { }} style={styles.button}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => { }} style={styles.buttonOutline}>
+          <TouchableOpacity onPress={handleSignup} style={styles.buttonOutline}>
             <Text style={styles.buttonOutlineText}>Register</Text>
           </TouchableOpacity>
         </View>
