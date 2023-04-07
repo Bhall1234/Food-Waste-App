@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   KeyboardAvoidingView,
   StyleSheet,
@@ -8,12 +8,27 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { auth } from '../firebase';
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
 
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');  
+    const [password, setPassword] = useState('');
+
+    const navigation = useNavigation();
+    
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(user => {
+            if (user) {
+                navigation.navigate('Home');
+            }
+        })
+
+        // Unsuscribe from the listener when unmounting
+        return unsubscribe; 
+    }, []);
+        
 
     const handleSignup = () => {
         createUserWithEmailAndPassword(auth, email, password)
@@ -23,6 +38,16 @@ const LoginScreen = () => {
         })
         .catch(error => alert(error.message));
     }
+
+    const handleLogin = () => {
+        signInWithEmailAndPassword(auth, email, password)
+        .then(userCredentials => {
+            const user = userCredentials.user;
+            console.log('Logged in with: ', user.email);
+        })
+        .catch(error => alert(error.message));
+    }
+
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="height">
@@ -44,7 +69,7 @@ const LoginScreen = () => {
           />
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={() => { }} style={styles.button}>
+          <TouchableOpacity onPress={handleLogin} style={styles.button}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleSignup} style={styles.buttonOutline}>
