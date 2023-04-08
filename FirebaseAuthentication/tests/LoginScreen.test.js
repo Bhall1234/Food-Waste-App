@@ -1,8 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import renderer from 'react-test-renderer';
 import LoginScreen from '../screens/LoginScreen';
 
 test('renders login screen', () => {
-  const { getByText } = render(<LoginScreen />);
+  const { getByText } = renderer(<LoginScreen />);
   expect(getByText('Your Login Text')).toBeDefined();
 });
