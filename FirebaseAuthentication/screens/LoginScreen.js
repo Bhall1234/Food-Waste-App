@@ -6,6 +6,7 @@ import {
   View,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { auth } from '../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
@@ -15,6 +16,8 @@ const LoginScreen = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const navigation = useNavigation();
     
@@ -24,41 +27,53 @@ const LoginScreen = () => {
                 navigation.replace('Home');
             }
         })
-
         // Unsuscribe from the listener when unmounting
         return unsubscribe; 
     }, []);
         
-
-    const handleSignup = () => {
-        createUserWithEmailAndPassword(auth, email, password)
-        .then(userCredentials => {
+    const handleSignup = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredentials.user;
             console.log('Registered with: ', user.email);
-        })
-        .catch(error => alert(error.message));
+        } catch (error) {
+            setError(error.message);
+        }
+        setLoading(false);
     }
 
-    const handleLogin = () => {
-        signInWithEmailAndPassword(auth, email, password)
-        .then(userCredentials => {
+    const handleLogin = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const userCredentials = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredentials.user;
             console.log('Logged in with: ', user.email);
-        })
-        .catch(error => alert(error.message));
+        } catch (error) {
+            setError(error.message);
+        }
+        setLoading(false);
     }
 
+    const handlePasswordReset = async () => {
+      navigation.navigate('Password Reset');
+    };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="height">
       <View style={styles.innerContainer}>
-      <Text style = {styles.title}>Foodwaste Prototype</Text>
+        <Text style={styles.title}>Foodwaste Prototype</Text>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Email"
             value={email}
-            onChangeText={text => setEmail(text) }
+            onChangeText={text => setEmail(text)}
             style={styles.input}
+            keyboardType="email-address"
+            placeholderTextColor="#61DAFB"
           />
           <TextInput
             placeholder="Password"
@@ -66,16 +81,34 @@ const LoginScreen = () => {
             onChangeText={text => setPassword(text)}
             style={styles.input}
             secureTextEntry
+            placeholderTextColor="#61DAFB"
           />
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={handleLogin} style={styles.button}>
+          <TouchableOpacity
+            onPress={handleLogin}
+            style={styles.button}
+            disabled={loading}
+            activeOpacity={0.6}
+          >
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleSignup} style={styles.buttonOutline}>
+          <TouchableOpacity
+            onPress={handleSignup}
+            style={styles.buttonOutline}
+            disabled={loading}
+            activeOpacity={0.6}
+          >
             <Text style={styles.buttonOutlineText}>Register</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handlePasswordReset}
+            activeOpacity={0.6}
+          >
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          </TouchableOpacity>
         </View>
+        {loading && <ActivityIndicator size="large" color="#61DAFB" />}
       </View>
     </KeyboardAvoidingView>
   );
@@ -145,5 +178,16 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: '#61DAFB',
     marginBottom: 40,
+  },
+  error: {
+    color: 'red',
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  forgotPasswordText: {
+    textAlign: 'center',
+    color: '#61DAFB',
+    fontSize: 16,
+    textDecorationLine: 'underline',
   },
 });
