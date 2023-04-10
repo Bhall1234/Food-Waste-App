@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View, FlatList, Image } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { collection, query, onSnapshot } from 'firebase/firestore';
+import { collection, query, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { firestore } from '../firebase';
 
 const FoodDatabaseScreen = () => {
@@ -20,6 +20,14 @@ const FoodDatabaseScreen = () => {
     return () => unsubscribe();
   }, []);
 
+  const deleteFoodItem = async (id) => {
+    try {
+      await deleteDoc(doc(firestore, 'foodItems', id));
+    } catch (error) {
+      console.error('Error deleting document:', error);
+    }
+  };
+  
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Food Database</Text>
@@ -31,6 +39,9 @@ const FoodDatabaseScreen = () => {
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.category}>Category: {item.category}</Text>
             <Text style={styles.date}>Date: {item.date.toDate().toDateString()}</Text>
+            <TouchableOpacity onPress={() => deleteFoodItem(item.id)} style={styles.deleteButton}>
+              <Text style={styles.deleteButtonText}>Delete</Text>
+            </TouchableOpacity>
           </View>
         )}
         keyExtractor={(item) => item.id}
@@ -76,4 +87,15 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 14,
   },
+  deleteButton: {
+    backgroundColor: '#ff4757',
+    padding: 5,
+    borderRadius: 5,
+    alignSelf: 'flex-end',
+  },
+  deleteButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
+  }
 });
