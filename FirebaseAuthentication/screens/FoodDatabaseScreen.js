@@ -1,10 +1,14 @@
-import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, TextInput } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { firestore } from '../firebase';
 
 const FoodDatabaseScreen = () => {
   const [foodItems, setFoodItems] = useState([]);
+
+  // Search and filter
+  const [search, setSearch] = useState('');
+  const [filteredFoodItems, setFilteredFoodItems] = useState([]);
 
   useEffect(() => {
     const q = query(collection(firestore, 'foodItems'));
@@ -27,12 +31,35 @@ const FoodDatabaseScreen = () => {
       console.error('Error deleting document:', error);
     }
   };
+
+  const filterFoodItems = (searchText) => {
+    setSearch(searchText);
+    if (searchText.length === 0) {
+      setFilteredFoodItems(foodItems);
+    } else {
+      const filteredItems = foodItems.filter((item) =>
+        item.title.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setFilteredFoodItems(filteredItems);
+    }
+  };
   
+  // Use Effect for search and filter, filters based on the search input
+  useEffect(() => {
+    setFilteredFoodItems(foodItems);
+  }, [foodItems]);
+    
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Food Database</Text>
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Search food items..."
+        onChangeText={(text) => filterFoodItems(text)}
+        value={search}
+      />
       <FlatList
-        data={foodItems}
+        data={filteredFoodItems}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
             <Image source={{ uri: item.image }} style={styles.image} />
@@ -97,5 +124,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 14,
-  }
+  },
+  searchBar: {
+    borderWidth: 1,
+    borderColor: '#61DAFB',
+    borderRadius: 5,
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingTop: 5,
+    paddingBottom: 5,
+    fontSize: 16,
+    marginBottom: 20,
+  },
 });
