@@ -2,13 +2,15 @@ import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, TextInput } 
 import React, { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { firestore } from '../firebase';
+import { Picker } from "@react-native-picker/picker";
 
 const FoodDatabaseScreen = () => {
   const [foodItems, setFoodItems] = useState([]);
 
-  // Search and filter
+  // Search and Category Filter
   const [search, setSearch] = useState('');
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
+  const categories = ['all', 'fruits', 'vegetables', 'canned food', 'meat', 'sea food', 'drink'];
 
   useEffect(() => {
     const q = query(collection(firestore, 'foodItems'));
@@ -48,7 +50,7 @@ const FoodDatabaseScreen = () => {
   useEffect(() => {
     setFilteredFoodItems(foodItems);
   }, [foodItems]);
-    
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Food Database</Text>
@@ -134,6 +136,22 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 5,
     fontSize: 16,
+    marginBottom: 20,
+  },
+  picker: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#61DAFB",
+    borderRadius: 5,
+    height: 40,
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  searchBarContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
   },
 });
