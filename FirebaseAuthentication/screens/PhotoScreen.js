@@ -11,6 +11,8 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import { firestore } from '../firebase';
+import { addDoc, collection, Timestamp } from 'firebase/firestore';
 
 const PhotoScreen = () => {
   const route = useRoute();
@@ -29,20 +31,26 @@ const PhotoScreen = () => {
     }
   };
 
-  const submitFoodItem = () => {
+  const submitFoodItem = async () => {
     if (!title || !category) {
       alert('Please enter a title and category for the food item.');
       return;
     }
-
+  
     const newFoodItem = {
       title,
       category,
       image,
+      date: Timestamp.fromDate(date),
     };
-
-    console.log('Food item:', newFoodItem);
-    navigation.goBack();
+  
+    try {
+      await addDoc(collection(firestore, 'foodItems'), newFoodItem);
+      console.log('Food item added successfully');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error adding food item: ', error);
+    }
   };
 
   return (
