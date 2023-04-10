@@ -10,8 +10,13 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
+import { useRoute, useNavigation } from '@react-navigation/native';
 
-const PhotoScreen = ({ image, onBack }) => {
+const PhotoScreen = () => {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const image = route.params.imageUri;
+
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -37,7 +42,7 @@ const PhotoScreen = ({ image, onBack }) => {
     };
 
     console.log('Food item:', newFoodItem);
-    onBack();
+    navigation.goBack();
   };
 
   return (
@@ -77,9 +82,6 @@ const PhotoScreen = ({ image, onBack }) => {
       <Text style={styles.dateText}>{`Selected Date: ${date.toDateString()}`}</Text>
       <TouchableOpacity onPress={submitFoodItem} style={styles.button}>
         <Text style={styles.buttonText}>Submit</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={onBack} style={styles.button}>
-        <Text style={styles.buttonText}>Back</Text>
       </TouchableOpacity>
     </ScrollView>
   );
