@@ -24,10 +24,27 @@ const PhotoScreen = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(new Date());
 
+  //const onDateChange = (event, selectedDate) => {
+    //setShowDatePicker(false);
+    //if (selectedDate) {
+      //setDate(selectedDate);
+    //}
+ // };
+
+  const isDateExpired = (selectedDate) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return selectedDate < today;
+    };
+
   const onDateChange = (event, selectedDate) => {
     setShowDatePicker(false);
     if (selectedDate) {
-      setDate(selectedDate);
+      if (isDateExpired(selectedDate)) {
+        alert('Please select a valid expiry date.');
+      } else {
+        setDate(selectedDate);
+      }
     }
   };
 
@@ -47,6 +64,7 @@ const PhotoScreen = () => {
     try {
       await addDoc(collection(firestore, 'foodItems'), newFoodItem);
       console.log('Food item added successfully');
+      alert('Item added successfully!');
       navigation.goBack();
     } catch (error) {
       console.error('Error adding food item: ', error);
