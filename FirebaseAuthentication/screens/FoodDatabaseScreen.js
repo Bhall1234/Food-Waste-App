@@ -64,7 +64,7 @@ const FoodDatabaseScreen = () => {
     <View style={styles.container}>
       <TextInput
         style={styles.searchBar}
-        placeholder="Search food items..."
+        placeholder="Search virtual pantry..."
         onChangeText={(text) => filterFoodItems(text)}
         value={search}
       />
