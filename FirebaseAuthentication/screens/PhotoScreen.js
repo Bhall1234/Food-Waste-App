@@ -55,7 +55,9 @@ const PhotoScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {image && <Image source={{ uri: image }} style={styles.imagePreview} />}
+      <View style={styles.imageBorder}>
+        {image && <Image source={{ uri: image }} style={styles.imagePreview} />}
+      </View>
       <TextInput
         style={styles.input}
         placeholder="Title"
@@ -114,7 +116,6 @@ const styles = StyleSheet.create({
     imagePreview: {
       width: 200,
       height: 200,
-      marginBottom: 20,
     },
     input: {
       borderWidth: 1,
@@ -151,5 +152,12 @@ const styles = StyleSheet.create({
     dateTime: {
       marginTop: 20,
       marginBottom: 20,
+    },
+    imageBorder: {
+      borderWidth: 1,
+      borderColor: '#61DAFB',
+      borderRadius: 5,
+      padding: 5,
+      marginTop: 20,
     },
   });

@@ -45,6 +45,11 @@ const FoodDatabaseScreen = () => {
       setFilteredFoodItems(filteredItems);
     }
   };
+
+  const isExpired = (itemDate) => {
+    const currentDate = new Date();
+    return itemDate.toDate() < currentDate;
+  };
   
   // Use Effect for search and filter, filters based on the search input
   useEffect(() => {
@@ -64,9 +69,11 @@ const FoodDatabaseScreen = () => {
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
             <Image source={{ uri: item.image }} style={styles.image} />
-            <Text style={styles.title}>{item.title}</Text>
+            <Text style={[styles.title, isExpired(item.date) ? styles.expiredTitle : {}]}>
+              {item.title}
+            </Text>
             <Text style={styles.category}>Category: {item.category}</Text>
-            <Text style={styles.date}>Date: {item.date.toDate().toDateString()}</Text>
+            <Text style={styles.date}>Expiration Date: {item.date.toDate().toDateString()}</Text>
             <TouchableOpacity onPress={() => deleteFoodItem(item.id)} style={styles.deleteButton}>
               <Text style={styles.deleteButtonText}>Delete</Text>
             </TouchableOpacity>
@@ -152,5 +159,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 20,
+  },
+  expiredTitle: {
+    color: 'red', 
   },
 });
