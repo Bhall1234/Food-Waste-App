@@ -11,6 +11,7 @@ import CameraScreen from './screens/CameraScreen';
 import FoodDatabaseScreen from './screens/FoodDatabaseScreen';
 import RecipeRecommendationScreen from './screens/RecipeRecommendationScreen';
 import PhotoScreen from './screens/PhotoScreen';
+import EditFoodItemScreen from './screens/EditFoodItemScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,6 +32,7 @@ const HomeStackScreen = () => {
     <HomeStack.Navigator>
       <HomeStack.Screen name="HomeTabs" component={HomeTabs} options={{ headerShown: false }} />
       <HomeStack.Screen name="Photo Screen" component={PhotoScreen} />
+      <HomeStack.Screen name="EditFoodItem" component={EditFoodItemScreen} />
     </HomeStack.Navigator>
   );
 };

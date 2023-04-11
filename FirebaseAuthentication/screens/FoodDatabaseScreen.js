@@ -2,8 +2,12 @@ import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, TextInput } 
 import React, { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { firestore } from '../firebase';
+import { useNavigation } from '@react-navigation/native';
+
 
 const FoodDatabaseScreen = () => {
+  const navigation = useNavigation();
+
   const [foodItems, setFoodItems] = useState([]);
 
   // Search and Category Filter
@@ -54,6 +58,10 @@ const FoodDatabaseScreen = () => {
     return isExpired(expiryDate) ? 'red' : 'green';
   };
 
+  const navigateToEditFoodItem = (item) => {
+    navigation.navigate('EditFoodItem', { foodItem: item });
+  };
+
   // Use Effect for search and filter, filters based on the search input
   useEffect(() => {
     setFilteredFoodItems(foodItems);
@@ -83,6 +91,9 @@ const FoodDatabaseScreen = () => {
              <TouchableOpacity onPress={() => deleteFoodItem(item.id)} style={styles.deleteButton}>
                <Text style={styles.deleteButtonText}>Delete</Text>
              </TouchableOpacity>
+             <TouchableOpacity onPress={() => navigateToEditFoodItem(item)} style={styles.editButton}>
+                <Text style={styles.editButtonText}>Edit</Text>
+              </TouchableOpacity>
            </View>
          )}
          keyExtractor={(item) => item.id}
@@ -135,6 +146,11 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   deleteButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  editButtonText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 14,
