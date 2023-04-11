@@ -54,7 +54,7 @@ const FoodDatabaseScreen = () => {
   const getItemBackgroundColor = (expiryDate) => {
     return isExpired(expiryDate) ? 'red' : 'green';
   };
-  
+
   // Use Effect for search and filter, filters based on the search input
   useEffect(() => {
     setFilteredFoodItems(foodItems);
