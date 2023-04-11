@@ -2,7 +2,6 @@ import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, TextInput } 
 import React, { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { firestore } from '../firebase';
-import { Picker } from "@react-native-picker/picker";
 
 const FoodDatabaseScreen = () => {
   const [foodItems, setFoodItems] = useState([]);
