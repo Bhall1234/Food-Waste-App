@@ -24,13 +24,6 @@ const PhotoScreen = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(new Date());
 
-  //const onDateChange = (event, selectedDate) => {
-    //setShowDatePicker(false);
-    //if (selectedDate) {
-      //setDate(selectedDate);
-    //}
- // };
-
   const isDateExpired = (selectedDate) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
