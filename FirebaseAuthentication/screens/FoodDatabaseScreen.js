@@ -80,7 +80,7 @@ const FoodDatabaseScreen = () => {
              <Image source={{ uri: item.image }} style={styles.image} />
              <Text style={styles.title}>{item.title}</Text>
              <Text style={styles.category}>Category: {item.category}</Text>
-             <Text style={styles.date}>Date: {item.date.toDate().toDateString()}</Text>
+             <Text style={styles.date}>Expiration Date: {item.date.toDate().toDateString()}</Text>
              <TouchableOpacity onPress={() => deleteFoodItem(item.id)} style={styles.deleteButton}>
                <Text style={styles.deleteButtonText}>Delete</Text>
              </TouchableOpacity>
