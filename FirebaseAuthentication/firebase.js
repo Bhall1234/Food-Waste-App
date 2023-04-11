@@ -1,6 +1,6 @@
-import { initializeApp} from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from 'firebase/firestore';
+import { initializeApp } from 'firebase/app';
+import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { REACT_APP_API_KEY, REACT_APP_AUTH_DOMAIN, REACT_APP_PROJECT_ID, REACT_APP_STORAGE_BUCKET, REACT_APP_MESSAGING_SENDER_ID, REACT_APP_APP_ID } from '@env';
 
 const firebaseConfig = {
@@ -18,7 +18,13 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
 
+// Connect to the Firebase Authentication emulator
+connectAuthEmulator(auth, 'http://10.169.193.25');
+
 // Initialize Firestore and get a reference to the service
 const firestore = getFirestore(app);
+
+// Connect to the Firebase Firestore emulator
+connectFirestoreEmulator(firestore, '10.169.193.25', 8080);
 
 export { auth, firestore };
