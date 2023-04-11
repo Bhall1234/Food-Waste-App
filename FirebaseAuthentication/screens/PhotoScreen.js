@@ -62,20 +62,22 @@ const PhotoScreen = () => {
         onChangeText={setTitle}
         value={title}
       />
-      <Picker
-        selectedValue={category}
-        style={styles.picker}
-        onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}
-      >
-        <Picker.Item label="Select a category" value="" />
-        <Picker.Item label="Fruit" value="fruit" />
-        <Picker.Item label="Vegetable" value="vegetable" />
-        <Picker.Item label="Canned Food" value="can" />
-        <Picker.Item label="Meat" value="meat" />
-        <Picker.Item label="Sea Food" value="sea" />
-        <Picker.Item label="Dairy" value="dairy" />
-        <Picker.Item label="Drink" value="drink" />
-      </Picker>
+      <View style={styles.input}>
+        <Picker
+          selectedValue={category}
+          style={styles.picker}
+          onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}
+        >
+          <Picker.Item label="Select a category" value="" />
+          <Picker.Item label="Fruit" value="fruit" />
+          <Picker.Item label="Vegetable" value="vegetable" />
+          <Picker.Item label="Canned Food" value="can" />
+          <Picker.Item label="Meat" value="meat" />
+          <Picker.Item label="Sea Food" value="sea" />
+          <Picker.Item label="Dairy" value="dairy" />
+          <Picker.Item label="Drink" value="drink" />
+        </Picker>
+      </View>
       {category !== '' && (
         <Text style={styles.selectedCategoryText}>Selected Category: {category}</Text>
       )}
@@ -89,6 +91,7 @@ const PhotoScreen = () => {
           display="default"
           onChange={onDateChange}
           textColor="#61DAFB"
+          style = {styles.dateTime}
         />
       )}
       <Text style={styles.dateText}>{`Expiration Date: ${date.toDateString()}`}</Text>
@@ -139,10 +142,14 @@ const styles = StyleSheet.create({
       fontSize: 16,
     },
     dateText: {
-      marginBottom: 20,
+      marginBottom: 40,
     },
     selectedCategoryText: {
       marginTop: 10,
+      marginBottom: 20,
+    },
+    dateTime: {
+      marginTop: 20,
       marginBottom: 20,
     },
   });
