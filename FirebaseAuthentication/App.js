@@ -20,7 +20,7 @@ const HomeTabs = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Camera" component={CameraScreen} />
-      <Tab.Screen name="Food Database" component={FoodDatabaseScreen} />
+      <Tab.Screen name="Virtual Pantry" component={FoodDatabaseScreen} />
       <Tab.Screen name="Recipes" component={RecipeRecommendationScreen} />
     </Tab.Navigator>
   );

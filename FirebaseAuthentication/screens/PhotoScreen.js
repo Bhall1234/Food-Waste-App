@@ -80,7 +80,7 @@ const PhotoScreen = () => {
         <Text style={styles.selectedCategoryText}>Selected Category: {category}</Text>
       )}
       <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.button}>
-        <Text style={styles.buttonText}>Select Date</Text>
+        <Text style={styles.buttonText}>Select Expiration Date</Text>
       </TouchableOpacity>
       {showDatePicker && (
         <DateTimePicker
@@ -91,7 +91,7 @@ const PhotoScreen = () => {
           textColor="#61DAFB"
         />
       )}
-      <Text style={styles.dateText}>{`Selected Date: ${date.toDateString()}`}</Text>
+      <Text style={styles.dateText}>{`Expiration Date: ${date.toDateString()}`}</Text>
       <TouchableOpacity onPress={submitFoodItem} style={styles.button}>
         <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>

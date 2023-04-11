@@ -53,7 +53,6 @@ const FoodDatabaseScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Food Database</Text>
       <TextInput
         style={styles.searchBar}
         placeholder="Search food items..."
