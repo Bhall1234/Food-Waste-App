@@ -78,6 +78,7 @@ const PhotoScreen = () => {
           <Picker.Item label="Sea Food" value="sea" />
           <Picker.Item label="Dairy" value="dairy" />
           <Picker.Item label="Drink" value="drink" />
+          <Picker.Item label="Snack" value="snack" />
         </Picker>
       </View>
       {category !== '' && (
