@@ -1,10 +1,30 @@
 // spoonacular.js
-const API_KEY = 'your_api_key_here'; // Replace with your actual API key from Spoonacular
-const BASE_URL = 'https://api.spoonacular.com';
+import axios from 'axios';
+import { REACT_APP_SPOONOCULAR_KEY } from '@env';
 
-export async function searchRecipes(query) {
-  const url = `${BASE_URL}/recipes/complexSearch?apiKey=${API_KEY}&query=${encodeURIComponent(query)}`;
-  const response = await fetch(url);
-  const data = await response.json();
-  return data.results;
-}
+
+const API_KEY = REACT_APP_SPOONOCULAR_KEY;
+
+export const searchRecipesByIngredients = async (ingredients) => {
+  try {
+    const response = await fetch(
+      `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${API_KEY}&ingredients=${ingredients}&number=10&ranking=1&ignorePantry=true&instructionsRequired=true`
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from Spoonacular API');
+    }
+
+    const data = await response.json();
+
+    // Map the fetched data to an array containing the required fields
+    return data.map((recipe) => ({
+      id: recipe.id,
+      title: recipe.title,
+      image: recipe.image,
+    }));
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
