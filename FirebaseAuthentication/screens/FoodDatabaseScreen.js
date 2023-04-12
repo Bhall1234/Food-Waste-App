@@ -17,8 +17,8 @@ const FoodDatabaseScreen = () => {
 
   useEffect(() => {
     // Get the current user's ID
-    const userId = auth.currentUser.uid;
-  
+    const userId = auth.currentUser ? auth.currentUser.uid : null;
+
     // Update the query to filter items by the userId
     const q = query(collection(firestore, 'foodItems'), where('userId', '==', userId));
   
