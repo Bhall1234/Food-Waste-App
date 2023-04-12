@@ -28,3 +28,29 @@ export const searchRecipesByIngredients = async (ingredients) => {
     return [];
   }
 };
+
+export const fetchRecipeDetails = async (recipeId) => {
+  try {
+    const response = await fetch(
+      `https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${API_KEY}`
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch recipe details from Spoonacular API');
+    }
+
+    const data = await response.json();
+
+    return {
+      id: data.id,
+      title: data.title,
+      image: data.image,
+      servings: data.servings,
+      readyInMinutes: data.readyInMinutes,
+      instructions: data.instructions,
+    };
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};

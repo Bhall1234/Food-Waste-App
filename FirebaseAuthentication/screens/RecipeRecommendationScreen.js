@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Image, StyleSheet  } from 'react-native';
-import { searchRecipesByIngredients } from '../spoonacular';
+import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet } from 'react-native';
+import { searchRecipesByIngredients, fetchRecipeDetails } from '../spoonacular';
+import { getDocs, query, collection, where } from 'firebase/firestore';
 import { firestore } from '../firebase';
-import { collection, where, getDocs, query } from 'firebase/firestore';
 import { auth } from '../firebase';
 
 const RecipeRecommendationScreen = () => {
   const [recipes, setRecipes] = useState([]);
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
+
+  useEffect(() => {
+    fetchRecipes();
+  }, []);
 
   const fetchRecipes = async () => {
     // Fetch the ingredients from the user's virtual pantry
@@ -14,11 +19,11 @@ const RecipeRecommendationScreen = () => {
     const foodItemsRef = collection(firestore, 'foodItems');
     const userPantryQuery = query(foodItemsRef, where('userId', '==', userId));
     const userPantrySnapshot = await getDocs(userPantryQuery);
-  
+
     if (!userPantrySnapshot.empty) {
       // Build a list of ingredients from the user's pantry documents
       const ingredientsList = userPantrySnapshot.docs.map(doc => doc.data().title.toString()).join(',');
-  
+
       // Then, call searchRecipesByIngredients() with the ingredients list
       const results = await searchRecipesByIngredients(ingredientsList);
       setRecipes(results);
@@ -27,28 +32,40 @@ const RecipeRecommendationScreen = () => {
     }
   };
 
-  // Fetch recipes when the component is mounted
-  useEffect(() => {
-    fetchRecipes();
-  }, []);
-  
+  const handleRecipePress = async (recipeId) => {
+    const recipeDetails = await fetchRecipeDetails(recipeId);
+    setSelectedRecipe(recipeDetails);
+  };
+
+  const renderRecipe = ({ item }) => (
+    <TouchableOpacity onPress={() => handleRecipePress(item.id)}>
+      <View style={styles.recipeCard}>
+        <Text style={styles.recipeTitle}>{item.title}</Text>
+        <Image source={{ uri: item.image }} style={styles.recipeImage} />
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.container}>
-      <FlatList
-        data={recipes}
-        renderItem={({ item }) => (
-          <View style={styles.recipeCard}>
-            <Text style={styles.recipeTitle}>{item.title}</Text>
-            <Image
-              source={{ uri: item.image }}
-              style={styles.recipeImage}
-            />
-            <Text style={styles.recipeInfo}>Servings: {item.servings}</Text>
-            <Text style={styles.recipeInfo}>Ready in: {item.readyInMinutes} minutes</Text>
-          </View>
-        )}
-        keyExtractor={(item) => item.id.toString()}
-      />
+      {selectedRecipe ? (
+        <View style={styles.recipeCard}>
+          <TouchableOpacity onPress={() => setSelectedRecipe(null)}>
+            <Text style={styles.backButton}>Go back to recipes</Text>
+          </TouchableOpacity>
+          <Text style={styles.recipeTitle}>{selectedRecipe.title}</Text>
+          <Image source={{ uri: selectedRecipe.image }} style={styles.recipeImage} />
+          <Text style={styles.recipeInfo}>Servings: {selectedRecipe.servings}</Text>
+          <Text style={styles.recipeInfo}>Ready in: {selectedRecipe.readyInMinutes} minutes</Text>
+          <Text style={styles.recipeInstructions}>{selectedRecipe.instructions}</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={recipes}
+          renderItem={renderRecipe}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      )}
     </View>
   );
 };
@@ -82,5 +99,17 @@ const styles = StyleSheet.create({
   },
   recipeInfo: {
     fontSize: 14,
+    marginBottom: 4,
+  },
+  recipeInstructions: {
+    fontSize: 14,
+    textAlign: 'justify',
+    marginBottom: 16,
+  },
+  backButton: {
+    fontSize: 16,
+    color: '#007AFF',
+    textAlign: 'center',
+    textDecorationLine: 'underline',
   },
 });
