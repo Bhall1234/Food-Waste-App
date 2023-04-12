@@ -4,7 +4,6 @@ import { collection, query, onSnapshot, deleteDoc, doc } from 'firebase/firestor
 import { firestore } from '../firebase';
 import { useNavigation } from '@react-navigation/native';
 
-
 const FoodDatabaseScreen = () => {
   const navigation = useNavigation();
 
@@ -13,7 +12,7 @@ const FoodDatabaseScreen = () => {
   // Search and Category Filter
   const [search, setSearch] = useState('');
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
-  const categories = ['all', 'fruits', 'vegetables', 'canned food', 'meat', 'sea food', 'drink'];
+  const [showCategories, setShowCategories] = useState(false);
 
   useEffect(() => {
     const q = query(collection(firestore, 'foodItems'));
@@ -62,6 +61,33 @@ const FoodDatabaseScreen = () => {
     navigation.navigate('EditFoodItem', { foodItem: item });
   };
 
+  // For statistics
+  const getTotalItems = () => {
+    return foodItems.length;
+  };
+
+  const getItemsByCategory = () => {
+    const categoriesCount = {};
+    foodItems.forEach((item) => {
+      if (!categoriesCount[item.category]) {
+        categoriesCount[item.category] = 0;
+      }
+      categoriesCount[item.category]++;
+    });
+    return categoriesCount;
+  };
+
+  const getExpiredItems = () => {
+    const currentDate = new Date();
+    return foodItems.filter((item) => item.date.toDate() < currentDate).length;
+  };
+
+  const itemsByCategory = getItemsByCategory();
+
+  const toggleCategories = () => {
+    setShowCategories(!showCategories);
+  };
+
   // Use Effect for search and filter, filters based on the search input
   useEffect(() => {
     setFilteredFoodItems(foodItems);
@@ -69,6 +95,23 @@ const FoodDatabaseScreen = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.statsContainer}>
+        <Text style={styles.stat}>Total Items: {getTotalItems()}</Text>
+        <Text style={styles.stat}>Expired Items: {getExpiredItems()}</Text>
+      </View>
+      <TouchableOpacity onPress={toggleCategories} style={styles.categoryButton}>
+        <Text style={styles.categoryButtonText}>Toggle Categories</Text>
+      </TouchableOpacity>
+      {showCategories && (
+        <View style={styles.categoriesContainer}>
+          <Text style={styles.subHeader}>Items by Category:</Text>
+          {Object.entries(itemsByCategory).map(([category, count]) => (
+            <Text key={category} style={styles.categoryStat}>
+              {category}: {count}
+            </Text>
+          ))}
+        </View>
+      )}
       <TextInput
         style={styles.searchBar}
         placeholder="Search virtual pantry..."
@@ -110,9 +153,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 16,
   },
-  header: {
-    fontSize: 24,
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#61DAFB',
+    borderRadius: 5,
+    padding: 10,
+  },
+  stat: {
+    fontSize: 16,
     fontWeight: 'bold',
+  },
+  searchBar: {
+    borderWidth: 1,
+    borderColor: '#61DAFB',
+    borderRadius: 5,
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingTop: 5,
+    paddingBottom: 5,
+    fontSize: 16,
     marginBottom: 20,
   },
   itemContainer: {
@@ -126,6 +188,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#fff',
+    borderRadius: 5,
   },
   title: {
     fontSize: 18,
@@ -138,24 +203,23 @@ const styles = StyleSheet.create({
   },
   date: {
     fontSize: 14,
+    marginBottom: 35,
   },
   deleteButton: {
     backgroundColor: '#ff4757',
     padding: 5,
     borderRadius: 5,
-    position: 'absolute', 
-    bottom: 5,            
+    position: 'absolute',
+    bottom: 5,
     right: 5,
-    marginBottom: 5,
-    marginTop: 5, 
   },
   editButton: {
     backgroundColor: '#1e0ff7',
     padding: 5,
     borderRadius: 5,
-    alignSelf: 'flex-left',
-    marginBottom: 5,
-    marginTop: 5,  
+    position: 'absolute',
+    bottom: 5,
+    left: 5,
   },
   deleteButtonText: {
     color: '#fff',
@@ -167,34 +231,33 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
   },
-  searchBar: {
+  categoryButton: {
+    backgroundColor: '#61DAFB',
+    borderRadius: 5,
+    padding: 5,
+    marginBottom: 20,
+  },
+  categoryButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  categoriesContainer: {
     borderWidth: 1,
     borderColor: '#61DAFB',
     borderRadius: 5,
-    paddingLeft: 8,
-    paddingRight: 8,
-    paddingTop: 5,
-    paddingBottom: 5,
-    fontSize: 16,
+    padding: 10,
     marginBottom: 20,
   },
-  picker: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#61DAFB",
-    borderRadius: 5,
-    height: 40,
+  subHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
-  filterContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  searchBarContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  expiredTitle: {
-    color: 'red', 
+  categoryStat: {
+    fontSize: 14,
+    marginBottom: 5,
+    minWidth: '45%',
   },
 });

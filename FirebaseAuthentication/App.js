@@ -4,9 +4,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+// Login Screens
 import LoginScreen from './screens/LoginScreen';
 import PasswordResetScreen from './screens/PasswordResetScreen';
 
+// Screens for the main app
 import CameraScreen from './screens/CameraScreen';
 import FoodDatabaseScreen from './screens/FoodDatabaseScreen';
 import RecipeRecommendationScreen from './screens/RecipeRecommendationScreen';
