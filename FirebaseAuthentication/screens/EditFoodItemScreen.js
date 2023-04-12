@@ -11,8 +11,7 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import firebase from '../firebase';
-import 'firebase/auth';
+import { auth } from '../firebase';
 import { firestore } from '../firebase';
 import { updateDoc, doc, Timestamp } from 'firebase/firestore';
 
@@ -21,7 +20,7 @@ const EditFoodItemScreen = () => {
   const navigation = useNavigation();
   const foodItem = route.params.foodItem;
 
-  const userId = firebase.auth().currentUser.uid;
+  const userId = auth.currentUser.uid;
 
   const [title, setTitle] = useState(foodItem.title);
   const [category, setCategory] = useState(foodItem.category);

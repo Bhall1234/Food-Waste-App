@@ -13,6 +13,7 @@ import { Picker } from '@react-native-picker/picker';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { firestore } from '../firebase';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
+import { auth } from '../firebase';
 
 const PhotoScreen = () => {
   const route = useRoute();
@@ -48,7 +49,7 @@ const PhotoScreen = () => {
     }
   
     // Get the current user's ID
-    const userId = firebase.auth().currentUser.uid;
+    const userId = auth.currentUser.uid;
   
     const newFoodItem = {
       title,
