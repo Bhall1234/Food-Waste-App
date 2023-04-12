@@ -1,10 +1,9 @@
 import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, TextInput } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { collection, query, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, onSnapshot, deleteDoc, doc, where } from 'firebase/firestore';
 import { firestore } from '../firebase';
 import { useNavigation } from '@react-navigation/native';
-import firebase from '../firebase';
-import 'firebase/auth';
+import { auth } from '../firebase';
 
 const FoodDatabaseScreen = () => {
   const navigation = useNavigation();
@@ -18,7 +17,7 @@ const FoodDatabaseScreen = () => {
 
   useEffect(() => {
     // Get the current user's ID
-    const userId = firebase.auth().currentUser.uid;
+    const userId = auth.currentUser.uid;
   
     // Update the query to filter items by the userId
     const q = query(collection(firestore, 'foodItems'), where('userId', '==', userId));
