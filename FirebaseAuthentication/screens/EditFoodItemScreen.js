@@ -11,7 +11,7 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import firebase from 'firebase/app';
+import firebase from '../firebase';
 import 'firebase/auth';
 import { firestore } from '../firebase';
 import { updateDoc, doc, Timestamp } from 'firebase/firestore';

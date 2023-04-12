@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { firestore } from '../firebase';
 import { useNavigation } from '@react-navigation/native';
+import firebase from '../firebase';
+import 'firebase/auth';
 
 const FoodDatabaseScreen = () => {
   const navigation = useNavigation();
