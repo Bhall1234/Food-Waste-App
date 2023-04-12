@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,8 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 import { firestore } from '../firebase';
 import { updateDoc, doc, Timestamp } from 'firebase/firestore';
 
@@ -19,10 +21,22 @@ const EditFoodItemScreen = () => {
   const navigation = useNavigation();
   const foodItem = route.params.foodItem;
 
+  const userId = firebase.auth().currentUser.uid;
+
   const [title, setTitle] = useState(foodItem.title);
   const [category, setCategory] = useState(foodItem.category);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(foodItem.date.toDate());
+  const [isEditable, setIsEditable] = useState(false);
+
+  useEffect(() => {
+    if (userId === foodItem.userId) {
+      setIsEditable(true);
+    } else {
+      setIsEditable(false);
+      alert("You are not authorized to edit this food item.");
+    }
+  }, [userId, foodItem.userId]);
 
   const isDateExpired = (selectedDate) => {
     const today = new Date();
@@ -74,12 +88,14 @@ const EditFoodItemScreen = () => {
         placeholder="Title"
         onChangeText={setTitle}
         value={title}
+        editable={isEditable}
       />
       <View style={styles.input}>
         <Picker
           selectedValue={category}
           style={styles.picker}
           onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}
+          enabled={isEditable}
         >
           <Picker.Item label="Select a category" value="" />
           <Picker.Item label="Fruit" value="fruit" />
@@ -95,7 +111,11 @@ const EditFoodItemScreen = () => {
       {category !== '' && (
         <Text style={styles.selectedCategoryText}>Selected Category: {category}</Text>
       )}
-      <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.button}>
+      <TouchableOpacity
+        onPress={() => setShowDatePicker(true)}
+        style={styles.button}
+        disabled={!isEditable}
+      >
         <Text style={styles.buttonText}>Select Expiration Date</Text>
       </TouchableOpacity>
       {showDatePicker && (
@@ -109,9 +129,11 @@ const EditFoodItemScreen = () => {
         />
       )}
       <Text style={styles.dateText}>{`Expiration Date: ${date.toDateString()}`}</Text>
-      <TouchableOpacity onPress={submitFoodItem} style={styles.button}>
-        <Text style={styles.buttonText}>Update</Text>
-      </TouchableOpacity>
+      {isEditable && (
+        <TouchableOpacity onPress={submitFoodItem} style={styles.button}>
+          <Text style={styles.buttonText}>Update</Text>
+        </TouchableOpacity>
+      )}
     </ScrollView>
   );
 };

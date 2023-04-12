@@ -15,7 +15,12 @@ const FoodDatabaseScreen = () => {
   const [showCategories, setShowCategories] = useState(false);
 
   useEffect(() => {
-    const q = query(collection(firestore, 'foodItems'));
+    // Get the current user's ID
+    const userId = firebase.auth().currentUser.uid;
+  
+    // Update the query to filter items by the userId
+    const q = query(collection(firestore, 'foodItems'), where('userId', '==', userId));
+  
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const items = [];
       querySnapshot.forEach((doc) => {
@@ -23,18 +28,10 @@ const FoodDatabaseScreen = () => {
       });
       setFoodItems(items);
     });
-
+  
     // Clean up the listener when the component is unmounted
     return () => unsubscribe();
   }, []);
-
-  const deleteFoodItem = async (id) => {
-    try {
-      await deleteDoc(doc(firestore, 'foodItems', id));
-    } catch (error) {
-      console.error('Error deleting document:', error);
-    }
-  };
 
   const filterFoodItems = (searchText) => {
     setSearch(searchText);

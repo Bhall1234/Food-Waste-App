@@ -47,11 +47,15 @@ const PhotoScreen = () => {
       return;
     }
   
+    // Get the current user's ID
+    const userId = firebase.auth().currentUser.uid;
+  
     const newFoodItem = {
       title,
       category,
       image,
       date: Timestamp.fromDate(date),
+      userId, // Add the user ID to the new food item data
     };
   
     try {
