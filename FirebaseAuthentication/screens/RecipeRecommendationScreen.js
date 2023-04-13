@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { searchRecipesByIngredients, fetchRecipeDetails } from '../spoonacular';
 import { getDocs, query, collection, where } from 'firebase/firestore';
 import { firestore } from '../firebase';
@@ -8,6 +8,7 @@ import { auth } from '../firebase';
 const RecipeRecommendationScreen = () => {
   const [recipes, setRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchRecipes();
@@ -34,8 +35,10 @@ const RecipeRecommendationScreen = () => {
   };
 
   const handleRecipePress = async (recipeId) => {
+    setLoading(true);
     const recipeDetails = await fetchRecipeDetails(recipeId);
     setSelectedRecipe(recipeDetails);
+    setLoading(false);
   };
 
   const renderRecipe = ({ item }) => (
@@ -52,8 +55,10 @@ const RecipeRecommendationScreen = () => {
       <TouchableOpacity onPress={fetchRecipes} style={styles.refreshButton}>
         <Text style={styles.refreshButtonText}>Refresh Recipes</Text>
       </TouchableOpacity>
-      {selectedRecipe ? (
-        <View style={styles.recipeCard}>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : selectedRecipe ? (
+        <ScrollView contentContainerStyle={styles.recipeCard}>
           <TouchableOpacity onPress={() => setSelectedRecipe(null)}>
             <Text style={styles.backButton}>Go back to recipes</Text>
           </TouchableOpacity>
@@ -62,7 +67,7 @@ const RecipeRecommendationScreen = () => {
           <Text style={styles.recipeInfo}>Servings: {selectedRecipe.servings}</Text>
           <Text style={styles.recipeInfo}>Ready in: {selectedRecipe.readyInMinutes} minutes</Text>
           <Text style={styles.recipeInstructions}>{selectedRecipe.instructions}</Text>
-        </View>
+        </ScrollView>
       ) : (
         <FlatList
           data={recipes}
@@ -115,6 +120,7 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     textAlign: 'center',
     textDecorationLine: 'underline',
+    marginBottom: 10,
   },
   refreshButton: {
     backgroundColor: '#007AFF',
