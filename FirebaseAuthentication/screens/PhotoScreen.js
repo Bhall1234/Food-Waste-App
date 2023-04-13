@@ -64,19 +64,21 @@ const PhotoScreen = () => {
       await addDoc(collection(firestore, 'foodItems'), newFoodItem);
       console.log('Food item added successfully');
       alert('Item added successfully!');
-      
+  
       // Schedule a notification
       const title = 'Item Expiry Reminder';
       const body = `The ${newFoodItem.title} in your pantry will expire in 2 days!`;
-      const seconds = 2 * 24 * 60 * 60; // Two days before the expiry date
-      notificationManager.scheduleNotification(title, body, seconds);
       
+      //const secondsUntilExpiry = (date.getTime() - new Date().getTime() - 2 * 24 * 60 * 60 * 1000) / 1000; 
+      const secondsUntilExpiry = 10;
+      notificationManager.scheduleNotification(title, body, secondsUntilExpiry);
+  
       navigation.goBack();
     } catch (error) {
       console.error('Error adding food item: ', error);
     }
   };
-
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

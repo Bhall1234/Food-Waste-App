@@ -70,18 +70,20 @@ const EditFoodItemScreen = () => {
 
     try {
       await updateDoc(doc(firestore, 'foodItems', foodItem.id), updatedFoodItem);
-      console.log('Food item updated successfully');
-      alert('Item updated successfully!');
-      
+      console.log('Food item added successfully');
+      alert('Item added successfully!');
+  
       // Schedule a notification
       const title = 'Item Expiry Reminder';
       const body = `The ${updatedFoodItem.title} in your pantry will expire in 2 days!`;
-      const seconds = 2 * 24 * 60 * 60; // Two days before the expiry date
-      notificationManager.scheduleNotification(title, body, seconds);
       
+      const secondsUntilExpiry = (date.getTime() - new Date().getTime() - 2 * 24 * 60 * 60 * 1000) / 1000;
+      
+      notificationManager.scheduleNotification(title, body, secondsUntilExpiry);
+  
       navigation.goBack();
     } catch (error) {
-      console.error('Error updating food item: ', error);
+      console.error('Error adding food item: ', error);
     }
   };
 
