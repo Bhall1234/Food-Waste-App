@@ -86,6 +86,14 @@ const FoodDatabaseScreen = () => {
     setShowCategories(!showCategories);
   };
 
+  const deleteFoodItem = async (id) => {
+    try {
+      await deleteDoc(doc(firestore, 'foodItems', id));
+    } catch (error) {
+      console.error('Error deleting document:', error);
+    }
+  };
+
   // Use Effect for search and filter, filters based on the search input
   useEffect(() => {
     setFilteredFoodItems(foodItems);
