@@ -30,6 +30,7 @@ const RecipeRecommendationScreen = () => {
     } else {
       console.log('User pantry not found');
     }
+    console.log("Recipes fetched");
   };
 
   const handleRecipePress = async (recipeId) => {
@@ -48,6 +49,9 @@ const RecipeRecommendationScreen = () => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={fetchRecipes} style={styles.refreshButton}>
+        <Text style={styles.refreshButtonText}>Refresh Recipes</Text>
+      </TouchableOpacity>
       {selectedRecipe ? (
         <View style={styles.recipeCard}>
           <TouchableOpacity onPress={() => setSelectedRecipe(null)}>
@@ -111,5 +115,17 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     textAlign: 'center',
     textDecorationLine: 'underline',
+  },
+  refreshButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 16,
+  },
+  refreshButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
