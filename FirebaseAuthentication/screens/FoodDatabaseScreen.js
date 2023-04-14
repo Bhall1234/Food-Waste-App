@@ -107,7 +107,6 @@ const FoodDatabaseScreen = () => {
     }
   };
 
-  /*
   const getItemsExpiringInTwoDays = () => {
     const currentDate = new Date();
     const twoDaysFromNow = new Date();
@@ -116,25 +115,28 @@ const FoodDatabaseScreen = () => {
     return foodItems.filter(
       (item) => item.date.toDate() > currentDate && item.date.toDate() <= twoDaysFromNow
     ).length;
-  }; */
+  }; 
 
-  const getItemsExpiringInTwoDays = () => {
+  const sendExpiringItemNotifications = () => {
     const currentDate = new Date();
     const twoDaysFromNow = new Date(currentDate);
     twoDaysFromNow.setDate(currentDate.getDate() + 2);
     const expiringItems = foodItems.filter(
       (item) => item.date.toDate() >= currentDate && item.date.toDate() <= twoDaysFromNow
     );
+    
     expiringItems.forEach((item) => {
-      sendNotification({
+      const triggerDate = new Date(item.date.toDate());
+      triggerDate.setDate(triggerDate.getDate() - 2);
+      const secondsUntilTrigger = (triggerDate - currentDate) / 1000;
+      notificationManager.scheduleNotification({
         title: 'Item Expiring Soon',
         body: `${item.title} will expire in 2 days. Please consume or dispose of it.`,
+        seconds: secondsUntilTrigger,
       });
     });
-    return expiringItems.length;
   };
   
-
   const toggleStats = () => {
     setShowStats(!showStats);
   };
@@ -165,6 +167,10 @@ const FoodDatabaseScreen = () => {
   // Use Effect for search and filter, filters based on the search input
   useEffect(() => {
     setFilteredFoodItems(foodItems);
+  }, [foodItems]);
+
+  useEffect(() => {
+    sendExpiringItemNotifications();
   }, [foodItems]);
 
   return (
@@ -225,6 +231,9 @@ const FoodDatabaseScreen = () => {
           </View>
         )}
         keyExtractor={(item) => item.id}
+        initialNumToRender={10} // Initial number of items to render
+        maxToRenderPerBatch={10} // Maximum number of items to render per batch during scrolling
+        windowSize={10} // Number of items rendered in the viewport and the specified buffer around it
       />
     </View>
   );
