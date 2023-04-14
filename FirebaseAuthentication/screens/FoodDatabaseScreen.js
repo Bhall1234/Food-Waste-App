@@ -14,6 +14,8 @@ const FoodDatabaseScreen = () => {
   const [search, setSearch] = useState('');
   const [filteredFoodItems, setFilteredFoodItems] = useState([]);
   const [showCategories, setShowCategories] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const [showColorKey, setShowColorKey] = useState(false);
 
   useEffect(() => {
     // Get the current user's ID
@@ -104,6 +106,43 @@ const FoodDatabaseScreen = () => {
     }
   };
 
+  const getItemsExpiringInTwoDays = () => {
+    const currentDate = new Date();
+    const twoDaysFromNow = new Date();
+    twoDaysFromNow.setDate(currentDate.getDate() + 2);
+  
+    return foodItems.filter(
+      (item) => item.date.toDate() > currentDate && item.date.toDate() <= twoDaysFromNow
+    ).length;
+  };
+
+  const toggleStats = () => {
+    setShowStats(!showStats);
+  };
+
+  const toggleColorKey = () => {
+    setShowColorKey(!showColorKey);
+  };
+  
+  const ColorKey = () => {
+    return (
+      <View style={styles.colorKeyContainer}>
+        <View style={styles.colorKeyItem}>
+          <View style={[styles.colorKeyIndicator, { backgroundColor: 'green' }]} />
+          <Text style={styles.colorKeyDescription}>Not expired</Text>
+        </View>
+        <View style={styles.colorKeyItem}>
+          <View style={[styles.colorKeyIndicator, { backgroundColor: 'orange' }]} />
+          <Text style={styles.colorKeyDescription}>Expiring in 2 days</Text>
+        </View>
+        <View style={styles.colorKeyItem}>
+          <View style={[styles.colorKeyIndicator, { backgroundColor: 'red' }]} />
+          <Text style={styles.colorKeyDescription}>Expired</Text>
+        </View>
+      </View>
+    );
+  };
+
   // Use Effect for search and filter, filters based on the search input
   useEffect(() => {
     setFilteredFoodItems(foodItems);
@@ -111,10 +150,21 @@ const FoodDatabaseScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.statsContainer}>
-        <Text style={styles.stat}>Total Items: {getTotalItems()}</Text>
-        <Text style={styles.stat}>Expired Items: {getExpiredItems()}</Text>
+      <TouchableOpacity onPress={toggleColorKey} style={styles.categoryButton}>
+        <Text style={styles.categoryButtonText}>Toggle Color Key</Text>
+      </TouchableOpacity>
+      {showColorKey && <ColorKey />}
+      <TouchableOpacity onPress={toggleStats} style={styles.categoryButton}>
+        <Text style={styles.categoryButtonText}>Toggle Stats</Text>
+      </TouchableOpacity>
+      {showStats && (
+      <View style={styles.categoriesContainer}>
+        <Text style={styles.subHeader}>Statistics:</Text>
+        <Text style={styles.categoryStat}>Total Items: {getTotalItems()}</Text>
+        <Text style={styles.categoryStat}>Expired Items: {getExpiredItems()}</Text>
+        <Text style={styles.categoryStat}>Expiring in two Days: {getItemsExpiringInTwoDays()}</Text>
       </View>
+      )}
       <TouchableOpacity onPress={toggleCategories} style={styles.categoryButton}>
         <Text style={styles.categoryButtonText}>Toggle Categories</Text>
       </TouchableOpacity>
@@ -135,27 +185,27 @@ const FoodDatabaseScreen = () => {
         value={search}
       />
       <FlatList
-         data={filteredFoodItems}
-         renderItem={({ item }) => (
-           <View
-             style={[
-               styles.itemContainer,
-               { backgroundColor: getItemBackgroundColor(item.date) },
-             ]}
-           >
-             <Image source={{ uri: item.image }} style={styles.image} />
-             <Text style={styles.title}>{item.title}</Text>
-             <Text style={styles.category}>Category: {item.category}</Text>
-             <Text style={styles.date}>Expiration Date: {item.date.toDate().toDateString()}</Text>
-             <TouchableOpacity onPress={() => deleteFoodItem(item.id)} style={styles.deleteButton}>
-               <Text style={styles.deleteButtonText}>Delete</Text>
-             </TouchableOpacity>
-             <TouchableOpacity onPress={() => navigateToEditFoodItem(item)} style={styles.editButton}>
-                <Text style={styles.editButtonText}>Edit</Text>
-              </TouchableOpacity>
-           </View>
-         )}
-         keyExtractor={(item) => item.id}
+        data={filteredFoodItems}
+        renderItem={({ item }) => (
+          <View
+            style={[
+              styles.itemContainer,
+              { backgroundColor: getItemBackgroundColor(item.date) },
+            ]}
+          >
+            <Image source={{ uri: item.image }} style={styles.image} />
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.category}>Category: {item.category}</Text>
+            <Text style={styles.date}>Expiration Date: {item.date.toDate().toDateString()}</Text>
+            <TouchableOpacity onPress={() => deleteFoodItem(item.id)} style={styles.deleteButton}>
+              <Text style={styles.deleteButtonText}>Delete</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigateToEditFoodItem(item)} style={styles.editButton}>
+              <Text style={styles.editButtonText}>Edit</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        keyExtractor={(item) => item.id}
       />
     </View>
   );
@@ -179,7 +229,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   stat: {
-    fontSize: 16,
+    fontSize: 8,
     fontWeight: 'bold',
   },
   searchBar: {
@@ -275,5 +325,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 5,
     minWidth: '45%',
+  },
+  colorKeyContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  colorKeyItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  colorKeyIndicator: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    marginRight: 5,
+  },
+  colorKeyDescription: {
+    fontSize: 12,
   },
 });
