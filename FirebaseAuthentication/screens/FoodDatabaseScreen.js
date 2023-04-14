@@ -52,7 +52,17 @@ const FoodDatabaseScreen = () => {
   };
 
   const getItemBackgroundColor = (expiryDate) => {
-    return isExpired(expiryDate) ? 'red' : 'green';
+    const currentDate = new Date();
+    const twoDaysFromNow = new Date();
+    twoDaysFromNow.setDate(currentDate.getDate() + 2);
+  
+    if (isExpired(expiryDate)) {
+      return 'red';
+    } else if (expiryDate.toDate() <= twoDaysFromNow) {
+      return 'orange';
+    } else {
+      return 'green';
+    }
   };
 
   const navigateToEditFoodItem = (item) => {
