@@ -4,6 +4,7 @@ import { collection, query, onSnapshot, deleteDoc, doc, where } from 'firebase/f
 import { firestore } from '../firebase';
 import { useNavigation } from '@react-navigation/native';
 import { auth } from '../firebase';
+import  notificationManager from '../notificationManager';
 
 const FoodDatabaseScreen = () => {
   const navigation = useNavigation();
@@ -106,6 +107,7 @@ const FoodDatabaseScreen = () => {
     }
   };
 
+  /*
   const getItemsExpiringInTwoDays = () => {
     const currentDate = new Date();
     const twoDaysFromNow = new Date();
@@ -114,7 +116,24 @@ const FoodDatabaseScreen = () => {
     return foodItems.filter(
       (item) => item.date.toDate() > currentDate && item.date.toDate() <= twoDaysFromNow
     ).length;
+  }; */
+
+  const getItemsExpiringInTwoDays = () => {
+    const currentDate = new Date();
+    const twoDaysFromNow = new Date(currentDate);
+    twoDaysFromNow.setDate(currentDate.getDate() + 2);
+    const expiringItems = foodItems.filter(
+      (item) => item.date.toDate() >= currentDate && item.date.toDate() <= twoDaysFromNow
+    );
+    expiringItems.forEach((item) => {
+      sendNotification({
+        title: 'Item Expiring Soon',
+        body: `${item.title} will expire in 2 days. Please consume or dispose of it.`,
+      });
+    });
+    return expiringItems.length;
   };
+  
 
   const toggleStats = () => {
     setShowStats(!showStats);

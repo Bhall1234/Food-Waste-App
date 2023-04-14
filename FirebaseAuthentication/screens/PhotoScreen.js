@@ -14,7 +14,6 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { firestore } from '../firebase';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { auth } from '../firebase';
-import  notificationManager from '../notificationManager';
 
 const PhotoScreen = () => {
   const route = useRoute();
@@ -64,15 +63,7 @@ const PhotoScreen = () => {
       await addDoc(collection(firestore, 'foodItems'), newFoodItem);
       console.log('Food item added successfully');
       alert('Item added successfully!');
-  
-      // Schedule a notification
-      const title = 'Item Expiry Reminder';
-      const body = `The ${newFoodItem.title} in your pantry will expire in 2 days!`;
       
-      //const secondsUntilExpiry = (date.getTime() - new Date().getTime() - 2 * 24 * 60 * 60 * 1000) / 1000; 
-      const secondsUntilExpiry = 10;
-      notificationManager.scheduleNotification(title, body, secondsUntilExpiry);
-  
       navigation.goBack();
     } catch (error) {
       console.error('Error adding food item: ', error);

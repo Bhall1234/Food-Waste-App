@@ -10,16 +10,13 @@ const requestNotificationPermission = async () => {
   return true;
 };
 
-const scheduleNotification = async (title, body, seconds) => {
+const scheduleNotification = async (content) => {
   console.log("Notification scheduled!");
   if (await requestNotificationPermission()) {
     await Notifications.scheduleNotificationAsync({
-      content: {
-        title: title,
-        body: body,
-      },
+      content: content,
       trigger: {
-        seconds: seconds,
+        seconds: 1,
       },
     });
   }
