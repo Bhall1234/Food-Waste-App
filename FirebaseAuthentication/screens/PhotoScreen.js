@@ -45,20 +45,32 @@ const PhotoScreen = () => {
 
   const sendExpiringItemNotifications = async () => {
     const currentDate = new Date();
-    const twoDaysFromNow = new Date(currentDate);
-    twoDaysFromNow.setDate(currentDate.getDate() + 2);
+    
+    // Calculate the difference in days between the expiry date and the current date
+    const daysUntilExpiry = (date - currentDate) / (1000 * 60 * 60 * 24);
   
-    if (date >= currentDate && date <= twoDaysFromNow) {
+    // Check if the item has more than 2 days until expiry
+    if (daysUntilExpiry > 2) {
       const triggerDate = new Date(date);
       triggerDate.setDate(triggerDate.getDate() - 2);
-  
+      
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
       await notificationManager.scheduleNotification(
         'Item Expiring Soon',
         `${title} will expire in 2 days. Please consume or dispose of it.`,
         {
-          seconds: secondsToTrigger, // set to one second for testing
+          seconds: secondsToTrigger, // Set the trigger seconds as a calculated number of seconds
+          channelId: 'default', // Set the appropriate channelId if required
+        }
+      );
+    } else {
+      // Schedule a notification immediately if the item is already within 2 days of expiry
+      await notificationManager.scheduleNotification(
+        'Item Expiring Soon',
+        `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
+        {
+          seconds: 0,
           channelId: 'default',
         }
       );
