@@ -58,7 +58,7 @@ const PhotoScreen = () => {
         'Item Expiring Soon',
         `${title} will expire in 2 days. Please consume or dispose of it.`,
         {
-          seconds: secondsToTrigger,
+          seconds: secondsToTrigger, // set to one second for testing
           channelId: 'default',
         }
       );
@@ -88,16 +88,7 @@ const PhotoScreen = () => {
       alert('Item added successfully!');
       
       // Send notifications for expiring items
-      //sendExpiringItemNotifications();
-
-      notificationManager.scheduleNotification(
-        'Immediate Notification',
-        'This is an immediate notification',
-        {
-          seconds: 1,
-          channelId: 'default',
-        }
-      );
+      sendExpiringItemNotifications();
 
       navigation.goBack();
     } catch (error) {
