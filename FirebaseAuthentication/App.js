@@ -15,6 +15,27 @@ import RecipeRecommendationScreen from './screens/RecipeRecommendationScreen';
 import PhotoScreen from './screens/PhotoScreen';
 import EditFoodItemScreen from './screens/EditFoodItemScreen';
 
+import * as Notifications from 'expo-notifications';
+
+// This listener is fired whenever a notification is received while the app is foregrounded
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+// Set up a notification channel for Android
+if (Platform.OS === 'android') {
+  Notifications.setNotificationChannelAsync('default', {
+    name: 'default',
+    importance: Notifications.AndroidImportance.MAX,
+    vibrationPattern: [0, 250, 250, 250],
+    lightColor: '#FF231F7C',
+  });
+}
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();

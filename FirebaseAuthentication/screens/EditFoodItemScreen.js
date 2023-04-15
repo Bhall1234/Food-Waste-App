@@ -70,8 +70,8 @@ const EditFoodItemScreen = () => {
         'Item Expiring Soon',
         `${title} will expire in 2 days. Please consume or dispose of it.`,
         {
-          seconds: secondsToTrigger, // Set the trigger seconds as a calculated number of seconds
-          channelId: 'default', // Set the appropriate channelId if required
+          seconds: secondsToTrigger,
+          channelId: 'default',
         }
       );
     }

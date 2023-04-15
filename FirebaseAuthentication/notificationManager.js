@@ -1,26 +1,39 @@
+import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
+// Check for the notification permissions
 const requestNotificationPermission = async () => {
-  const { status } = await Notifications.requestPermissionsAsync();
-  console.log('Notification permission status:', status);
-  if (status !== 'granted') {
-    alert('No notification permissions granted!');
-    console.log("No notification permissions granted!");
+
+  if (Platform.OS !== 'web') {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== 'granted') {
+      alert('No notification permissions granted!');
+      return false;
+    }
+  } else {
+    alert('Must use a physical device for Push Notifications');
     return false;
   }
+
   return true;
 };
 
-
-const scheduleNotification = async (title, body, triggerDate) => {
-  console.log("Notification scheduled!");
+// Schedule the notification
+const scheduleNotification = async (title, body, trigger) => {
   if (await requestNotificationPermission()) {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: title,
         body: body,
       },
-      trigger: triggerDate || null, // Set trigger to null if triggerDate is not provided
+      trigger: trigger,
     });
   }
 };

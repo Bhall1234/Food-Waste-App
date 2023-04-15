@@ -58,13 +58,12 @@ const PhotoScreen = () => {
         'Item Expiring Soon',
         `${title} will expire in 2 days. Please consume or dispose of it.`,
         {
-          seconds: secondsToTrigger, // Set the trigger seconds as a calculated number of seconds
-          channelId: 'default', // Set the appropriate channelId if required
+          seconds: secondsToTrigger,
+          channelId: 'default',
         }
       );
     }
   };
-  
   
   const submitFoodItem = async () => {
     if (!title || !category) {
@@ -89,7 +88,16 @@ const PhotoScreen = () => {
       alert('Item added successfully!');
       
       // Send notifications for expiring items
-      sendExpiringItemNotifications();
+      //sendExpiringItemNotifications();
+
+      notificationManager.scheduleNotification(
+        'Immediate Notification',
+        'This is an immediate notification',
+        {
+          seconds: 1,
+          channelId: 'default',
+        }
+      );
 
       navigation.goBack();
     } catch (error) {
