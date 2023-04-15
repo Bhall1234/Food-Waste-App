@@ -14,6 +14,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { firestore } from '../firebase';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { auth } from '../firebase';
+import notificationManager from '../notificationManager';
 
 const PhotoScreen = () => {
   const route = useRoute();
@@ -42,6 +43,29 @@ const PhotoScreen = () => {
     }
   };
 
+  const sendExpiringItemNotifications = async () => {
+    const currentDate = new Date();
+    const twoDaysFromNow = new Date(currentDate);
+    twoDaysFromNow.setDate(currentDate.getDate() + 2);
+  
+    if (date >= currentDate && date <= twoDaysFromNow) {
+      const triggerDate = new Date(date);
+      triggerDate.setDate(triggerDate.getDate() - 2);
+  
+      const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
+  
+      await notificationManager.scheduleNotification(
+        'Item Expiring Soon',
+        `${title} will expire in 2 days. Please consume or dispose of it.`,
+        {
+          seconds: secondsToTrigger, // Set the trigger seconds as a calculated number of seconds
+          channelId: 'default', // Set the appropriate channelId if required
+        }
+      );
+    }
+  };
+  
+  
   const submitFoodItem = async () => {
     if (!title || !category) {
       alert('Please enter a title and category for the food item.');
@@ -64,6 +88,9 @@ const PhotoScreen = () => {
       console.log('Food item added successfully');
       alert('Item added successfully!');
       
+      // Send notifications for expiring items
+      sendExpiringItemNotifications();
+
       navigation.goBack();
     } catch (error) {
       console.error('Error adding food item: ', error);

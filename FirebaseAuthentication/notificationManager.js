@@ -2,6 +2,7 @@ import * as Notifications from 'expo-notifications';
 
 const requestNotificationPermission = async () => {
   const { status } = await Notifications.requestPermissionsAsync();
+  console.log('Notification permission status:', status);
   if (status !== 'granted') {
     alert('No notification permissions granted!');
     console.log("No notification permissions granted!");
@@ -9,6 +10,7 @@ const requestNotificationPermission = async () => {
   }
   return true;
 };
+
 
 const scheduleNotification = async (title, body, triggerDate) => {
   console.log("Notification scheduled!");
@@ -18,7 +20,7 @@ const scheduleNotification = async (title, body, triggerDate) => {
         title: title,
         body: body,
       },
-      trigger: triggerDate,
+      trigger: triggerDate || null, // Set trigger to null if triggerDate is not provided
     });
   }
 };
