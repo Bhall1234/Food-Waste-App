@@ -64,7 +64,7 @@ const EditFoodItemScreen = () => {
       const triggerDate = new Date(date);
       triggerDate.setDate(triggerDate.getDate() - 2);
   
-      const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
+      //const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
       await notificationManager.scheduleNotification(
         'Item Expiring Soon',
