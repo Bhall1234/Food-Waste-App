@@ -148,10 +148,6 @@ const FoodDatabaseScreen = () => {
     setFilteredFoodItems(foodItems);
   }, [foodItems]);
 
-  useEffect(() => {
-    sendExpiringItemNotifications();
-  }, [foodItems]);
-
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={toggleColorKey} style={styles.categoryButton}>
