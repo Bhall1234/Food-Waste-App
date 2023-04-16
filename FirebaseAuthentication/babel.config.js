@@ -5,6 +5,7 @@
     //presets: ['babel-preset-expo'],
   //};
 //};
+/*
 
 module.exports = {
   presets: ['module:metro-react-native-babel-preset'],
@@ -22,4 +23,21 @@ module.exports = {
     ],
   ],
 };
+*/
+
+module.exports = {
+  presets: [
+    'module:metro-react-native-babel-preset',
+    '@babel/preset-env',
+    '@babel/preset-react',
+  ],
+  plugins: [
+    '@babel/plugin-transform-modules-commonjs',
+    '@babel/plugin-proposal-export-namespace-from',
+    '@babel/plugin-proposal-export-default-from',
+    '@babel/plugin-syntax-dynamic-import',
+  ],
+};
+
+
 
