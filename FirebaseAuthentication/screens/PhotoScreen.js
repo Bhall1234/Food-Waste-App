@@ -65,12 +65,17 @@ const PhotoScreen = () => {
         }
       );
     } else {
-      // Schedule a notification immediately if the item is already within 2 days of expiry
+      // Schedule a notification to be triggered 6 hours before the item's expiration
+      const triggerDate = new Date(date);
+      triggerDate.setHours(triggerDate.getHours() - 6);
+  
+      const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
+  
       await notificationManager.scheduleNotification(
         'Item Expiring Soon',
         `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
         {
-          seconds: 1,
+          seconds: secondsToTrigger,
           channelId: 'default',
         }
       );
