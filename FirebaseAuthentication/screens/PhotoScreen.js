@@ -70,7 +70,7 @@ const PhotoScreen = () => {
         'Item Expiring Soon',
         `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
         {
-          seconds: secondsToTrigger,
+          seconds: 1,
           channelId: 'default',
         }
       );

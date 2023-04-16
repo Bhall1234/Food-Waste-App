@@ -105,7 +105,7 @@ const EditFoodItemScreen = () => {
         'Item Expiring Soon',
         `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
         {
-          seconds: 0,
+          seconds: 1,
           channelId: 'default',
         }
       );
