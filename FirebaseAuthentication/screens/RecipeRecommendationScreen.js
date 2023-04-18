@@ -6,6 +6,7 @@ import { firestore } from '../firebase';
 import { auth } from '../firebase';
 
 const RecipeRecommendationScreen = () => {
+  // Declare state variables
   const [recipes, setRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [loading, setLoading] = useState(false);

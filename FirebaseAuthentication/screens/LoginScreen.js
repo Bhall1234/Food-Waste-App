@@ -14,13 +14,16 @@ import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
 
+    // Declare state variables
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    // Get the navigation object
     const navigation = useNavigation();
     
+    // Check if the user is already logged in
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             if (user) {
@@ -30,11 +33,13 @@ const LoginScreen = () => {
         // Unsuscribe from the listener when unmounting
         return unsubscribe; 
     }, []);
-        
+    
+    // Handle the login and register
     const handleSignup = async () => {
         setLoading(true);
         setError('');
         try {
+            // Create a new user account
             const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredentials.user;
             console.log('Registered with: ', user.email);
@@ -44,10 +49,12 @@ const LoginScreen = () => {
         setLoading(false);
     }
 
+    // Handle the login and register
     const handleLogin = async () => {
         setLoading(true);
         setError('');
         try {
+            // login with email and password
             const userCredentials = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredentials.user;
             console.log('Logged in with: ', user.email);
@@ -57,6 +64,7 @@ const LoginScreen = () => {
         setLoading(false);
     }
 
+    // Handle the password 
     const handlePasswordReset = async () => {
       navigation.navigate('Password Reset');
     };
