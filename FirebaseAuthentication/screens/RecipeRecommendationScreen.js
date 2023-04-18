@@ -81,9 +81,6 @@ const RecipeRecommendationScreen = () => {
   );
 };
 
-// <HTMLView value={selectedRecipe.instructions} stylesheet={styles} />
-// <Text style={styles.recipeInstructions}>{selectedRecipe.instructions}</Text>
-
 export default RecipeRecommendationScreen;
 
 const styles = StyleSheet.create({
