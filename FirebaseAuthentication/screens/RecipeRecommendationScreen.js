@@ -4,6 +4,7 @@ import { searchRecipesByIngredients, fetchRecipeDetails } from '../spoonacular';
 import { getDocs, query, collection, where } from 'firebase/firestore';
 import { firestore } from '../firebase';
 import { auth } from '../firebase';
+import HTMLView from 'react-native-htmlview';
 
 const RecipeRecommendationScreen = () => {
   // Declare state variables
@@ -67,7 +68,7 @@ const RecipeRecommendationScreen = () => {
           <Image source={{ uri: selectedRecipe.image }} style={styles.recipeImage} />
           <Text style={styles.recipeInfo}>Servings: {selectedRecipe.servings}</Text>
           <Text style={styles.recipeInfo}>Ready in: {selectedRecipe.readyInMinutes} minutes</Text>
-          <Text style={styles.recipeInstructions}>{selectedRecipe.instructions}</Text>
+          <HTMLView value={selectedRecipe.instructions} stylesheet={styles} />
         </ScrollView>
       ) : (
         <FlatList
@@ -79,6 +80,9 @@ const RecipeRecommendationScreen = () => {
     </View>
   );
 };
+
+// <HTMLView value={selectedRecipe.instructions} stylesheet={styles} />
+// <Text style={styles.recipeInstructions}>{selectedRecipe.instructions}</Text>
 
 export default RecipeRecommendationScreen;
 
