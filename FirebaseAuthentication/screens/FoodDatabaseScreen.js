@@ -30,6 +30,7 @@ const FoodDatabaseScreen = () => {
         items.push({ id: doc.id, ...doc.data() });
       });
       setFoodItems(items);
+      console.log('Filtered items by userId:', items);
     });
   
     // Clean up the listener when the component is unmounted
