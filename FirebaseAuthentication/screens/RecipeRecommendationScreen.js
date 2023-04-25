@@ -4,7 +4,7 @@ import { searchRecipesByIngredients, fetchRecipeDetails } from '../spoonacular';
 import { getDocs, query, collection, where } from 'firebase/firestore';
 import { firestore } from '../firebase';
 import { auth } from '../firebase';
-import HTMLView from 'react-native-htmlview';
+import RenderHTML from 'react-native-render-html';
 
 const RecipeRecommendationScreen = () => {
   // Declare state variables
@@ -52,6 +52,9 @@ const RecipeRecommendationScreen = () => {
     </TouchableOpacity>
   );
 
+  // Get the device width to set the contentWidth for RenderHtml
+const contentWidth = Dimensions.get('window').width - 20; // Subtracting 20 for the padding in the container style
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={fetchRecipes} style={styles.refreshButton}>
@@ -68,7 +71,7 @@ const RecipeRecommendationScreen = () => {
           <Image source={{ uri: selectedRecipe.image }} style={styles.recipeImage} />
           <Text style={styles.recipeInfo}>Servings: {selectedRecipe.servings}</Text>
           <Text style={styles.recipeInfo}>Ready in: {selectedRecipe.readyInMinutes} minutes</Text>
-          <HTMLView value={selectedRecipe.instructions} stylesheet={styles} />
+          <RenderHTML contentWidth={contentWidth} source={{ html: recipeDetails.instructions }} />
         </ScrollView>
       ) : (
         <FlatList
