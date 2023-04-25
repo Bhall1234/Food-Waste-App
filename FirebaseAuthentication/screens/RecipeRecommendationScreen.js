@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
 import { searchRecipesByIngredients, fetchRecipeDetails } from '../spoonacular';
 import { getDocs, query, collection, where } from 'firebase/firestore';
 import { firestore } from '../firebase';
@@ -71,7 +71,7 @@ const contentWidth = Dimensions.get('window').width - 20; // Subtracting 20 for 
           <Image source={{ uri: selectedRecipe.image }} style={styles.recipeImage} />
           <Text style={styles.recipeInfo}>Servings: {selectedRecipe.servings}</Text>
           <Text style={styles.recipeInfo}>Ready in: {selectedRecipe.readyInMinutes} minutes</Text>
-          <RenderHTML contentWidth={contentWidth} source={{ html: recipeDetails.instructions }} />
+          <RenderHTML contentWidth={contentWidth} source={{ html: selectedRecipe.instructions }} />
         </ScrollView>
       ) : (
         <FlatList
