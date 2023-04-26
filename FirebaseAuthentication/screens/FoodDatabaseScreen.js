@@ -129,16 +129,16 @@ const FoodDatabaseScreen = () => {
     setShowColorKey(!showColorKey);
   };
 
-  const deleteImageFromStorage = async (imageUrl) => {
-    try {
-      const imagePath = imageUrl.replace(/^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/[^\/]*\//, '');
-      const imageRef = ref(storage, imagePath);
-      await deleteObject(imageRef);
-      console.log('Image deleted from Firebase Storage:', imagePath);
-    } catch (error) {
-      console.error('Error deleting image from Firebase Storage:', error);
-    }
-  };
+const deleteImageFromStorage = async (imageUrl) => {
+  try {
+    const imagePath = imageUrl.replace(/^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/[^\/]*\//, '');
+    const imageRef = ref(storage, imagePath);
+    await deleteObject(imageRef);
+    console.log('Image deleted from Firebase Storage:', imagePath);
+  } catch (error) {
+    console.error('Error deleting image from Firebase Storage:', error);
+  }
+};
   
   const ColorKey = () => {
     return (
