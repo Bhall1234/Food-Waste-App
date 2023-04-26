@@ -55,29 +55,6 @@ const EditFoodItemScreen = () => {
     }
   };
 
-  /*const sendExpiringItemNotifications = async () => {
-    const currentDate = new Date();
-    const twoDaysFromNow = new Date(currentDate);
-    twoDaysFromNow.setDate(currentDate.getDate() + 2);
-  
-    if (date >= currentDate && date <= twoDaysFromNow) {
-      const triggerDate = new Date(date);
-      triggerDate.setDate(triggerDate.getDate() - 2);
-  
-      //const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
-  
-      await notificationManager.scheduleNotification(
-        'Item Expiring Soon',
-        `${title} will expire in 2 days. Please consume or dispose of it.`,
-        {
-          seconds: secondsToTrigger,
-          channelId: 'default',
-        }
-      );
-    }
-  };
-  */
-
   const sendExpiringItemNotifications = async () => {
     const currentDate = new Date();
     

@@ -196,12 +196,11 @@ const PhotoScreen = () => {
 export default PhotoScreen;
 
 const styles = StyleSheet.create({
-    container: {
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: 16,
-    },
+  container: {
+    backgroundColor: '#fff',
+    paddingHorizontal: 32, // Increase the horizontal padding value (left and right)
+    paddingVertical: 16, // Maintain the current vertical padding value (top and bottom)
+  },  
     imagePreview: {
       width: 200,
       height: 200,
@@ -255,5 +254,8 @@ const styles = StyleSheet.create({
       left: '50%',
       marginLeft: -12, // Half of the ActivityIndicator size
       marginTop: -12, // Half of the ActivityIndicator size
+    },
+    scrollViewContent: {
+      paddingBottom: 16,
     },    
   });
