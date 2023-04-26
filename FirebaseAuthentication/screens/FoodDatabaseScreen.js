@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, TextInput } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, deleteDoc, doc, where } from 'firebase/firestore';
-import { firestore } from '../firebase';
 import { useNavigation } from '@react-navigation/native';
-import { auth } from '../firebase';
+import { auth, firestore, storage } from '../firebase';
+import { getStorage, ref, deleteObject } from 'firebase/storage';
 
 const FoodDatabaseScreen = () => {
   const navigation = useNavigation();
@@ -99,8 +99,12 @@ const FoodDatabaseScreen = () => {
     setShowCategories(!showCategories);
   };
 
-  const deleteFoodItem = async (id) => {
+  const deleteFoodItem = async (id, imagePath) => {
     try {
+      // First, delete the image associated with the food item
+      await deleteImageFromStorage(imagePath);
+  
+      // Then, delete the food item document from Firestore
       await deleteDoc(doc(firestore, 'foodItems', id));
     } catch (error) {
       console.error('Error deleting document:', error);
@@ -123,6 +127,17 @@ const FoodDatabaseScreen = () => {
 
   const toggleColorKey = () => {
     setShowColorKey(!showColorKey);
+  };
+
+  const deleteImageFromStorage = async (imageUrl) => {
+    try {
+      const imagePath = imageUrl.replace(/^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/[^\/]*\//, '');
+      const imageRef = ref(storage, imagePath);
+      await deleteObject(imageRef);
+      console.log('Image deleted from Firebase Storage:', imagePath);
+    } catch (error) {
+      console.error('Error deleting image from Firebase Storage:', error);
+    }
   };
   
   const ColorKey = () => {
@@ -198,8 +213,8 @@ const FoodDatabaseScreen = () => {
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.category}>Category: {item.category}</Text>
             <Text style={styles.date}>Expiration Date: {item.date.toDate().toDateString()}</Text>
-            <TouchableOpacity onPress={() => deleteFoodItem(item.id)} style={styles.deleteButton}>
-              <Text style={styles.deleteButtonText}>Delete</Text>
+            <TouchableOpacity onPress={() => deleteFoodItem(item.id, item.imagePath)} style={styles.deleteButton}>
+            <Text style={styles.deleteButtonText}>Delete</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigateToEditFoodItem(item)} style={styles.editButton}>
               <Text style={styles.editButtonText}>Edit</Text>
