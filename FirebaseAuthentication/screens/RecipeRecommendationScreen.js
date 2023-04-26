@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
 import { searchRecipesByIngredients, fetchRecipeDetails } from '../spoonacular';
 import { getDocs, query, collection, where } from 'firebase/firestore';
-import { firestore } from '../firebase';
-import { auth } from '../firebase';
+import { firestore, auth } from '../firebase';
 import RenderHTML from 'react-native-render-html';
 
 const RecipeRecommendationScreen = () => {

@@ -1,6 +1,7 @@
 import { initializeApp} from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 import { REACT_APP_API_KEY, REACT_APP_AUTH_DOMAIN, REACT_APP_PROJECT_ID, REACT_APP_STORAGE_BUCKET, REACT_APP_MESSAGING_SENDER_ID, REACT_APP_APP_ID } from '@env';
 
 const firebaseConfig = {
@@ -21,4 +22,7 @@ const auth = getAuth(app);
 // Initialize Firestore and get a reference to the service
 const firestore = getFirestore(app);
 
-export { auth, firestore };
+// Initialize Firebase Storage and get a reference to the service
+const storage = getStorage(app);
+
+export { auth, firestore, storage };

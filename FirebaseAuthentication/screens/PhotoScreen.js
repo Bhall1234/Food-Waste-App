@@ -7,14 +7,15 @@ import {
   TextInput,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { firestore } from '../firebase';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
-import { auth } from '../firebase';
+import { auth, firestore, storage } from '../firebase';
 import notificationManager from '../notificationManager';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const PhotoScreen = () => {
   const route = useRoute();
@@ -25,7 +26,21 @@ const PhotoScreen = () => {
   const [category, setCategory] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(new Date());
+  const [loading, setLoading] = useState(false);
 
+  const uploadImageAndGetDownloadURL = async (imageUri) => {
+    const response = await fetch(imageUri);
+    const blob = await response.blob();
+  
+    const userId = auth.currentUser.uid;
+    const imageRef = ref(storage, `foodImages/${userId}/${Date.now()}`);
+  
+    await uploadBytes(imageRef, blob);
+    const downloadURL = await getDownloadURL(imageRef);
+  
+    return downloadURL;
+  };
+  
   const isDateExpired = (selectedDate) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -88,82 +103,93 @@ const PhotoScreen = () => {
       return;
     }
   
-    // Get the current user's ID
-    const userId = auth.currentUser.uid;
-  
-    const newFoodItem = {
-      title,
-      category,
-      image,
-      date: Timestamp.fromDate(date),
-      userId, // Add the user ID to the new food item data
-    };
+    setLoading(true);
   
     try {
+      // Upload the image to Firebase Storage and get the download URL
+      const imageUrl = await uploadImageAndGetDownloadURL(image);
+  
+      // Get the current user's ID
+      const userId = auth.currentUser.uid;
+  
+      const newFoodItem = {
+        title,
+        category,
+        image: imageUrl, // Use the download URL instead of the local image URI
+        date: Timestamp.fromDate(date),
+        userId, // Add the user ID to the new food item data
+      };
+  
       await addDoc(collection(firestore, 'foodItems'), newFoodItem);
       console.log('Food item added successfully');
       alert('Item added successfully!');
-      
+  
       // Send notifications for expiring items
       sendExpiringItemNotifications();
-
+  
+      setLoading(false);
       navigation.goBack();
     } catch (error) {
       console.error('Error adding food item: ', error);
+      setLoading(false);
     }
   };
   
-
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.imageBorder}>
-        {image && <Image source={{ uri: image }} style={styles.imagePreview} />}
-      </View>
-      <TextInput
-        style={styles.input}
-        placeholder="Title"
-        onChangeText={setTitle}
-        value={title}
-      />
-      <View style={styles.input}>
-        <Picker
-          selectedValue={category}
-          style={styles.picker}
-          onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}
-        >
-          <Picker.Item label="Select a category" value="" />
-          <Picker.Item label="Fruit" value="fruit" />
-          <Picker.Item label="Vegetable" value="vegetable" />
-          <Picker.Item label="Canned Food" value="can" />
-          <Picker.Item label="Meat" value="meat" />
-          <Picker.Item label="Sea Food" value="sea" />
-          <Picker.Item label="Dairy" value="dairy" />
-          <Picker.Item label="Drink" value="drink" />
-          <Picker.Item label="Bread" value="bread" />
-          <Picker.Item label="Snack" value="snack" />
-        </Picker>
-      </View>
-      {category !== '' && (
-        <Text style={styles.selectedCategoryText}>Selected Category: {category}</Text>
-      )}
-      <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.button}>
-        <Text style={styles.buttonText}>Select Expiration Date</Text>
-      </TouchableOpacity>
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={onDateChange}
-          textColor="#61DAFB"
-          style = {styles.dateTime}
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.imageBorder}>
+          {image && <Image source={{ uri: image }} style={styles.imagePreview} />}
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Title"
+          onChangeText={setTitle}
+          value={title}
         />
+        <View style={styles.input}>
+          <Picker
+            selectedValue={category}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}
+          >
+            <Picker.Item label="Select a category" value="" />
+            <Picker.Item label="Fruit" value="fruit" />
+            <Picker.Item label="Vegetable" value="vegetable" />
+            <Picker.Item label="Canned Food" value="can" />
+            <Picker.Item label="Meat" value="meat" />
+            <Picker.Item label="Sea Food" value="sea" />
+            <Picker.Item label="Dairy" value="dairy" />
+            <Picker.Item label="Drink" value="drink" />
+            <Picker.Item label="Bread" value="bread" />
+            <Picker.Item label="Snack" value="snack" />
+          </Picker>
+        </View>
+        {category !== '' && (
+          <Text style={styles.selectedCategoryText}>Selected Category: {category}</Text>
+        )}
+        <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.button}>
+          <Text style={styles.buttonText}>Select Expiration Date</Text>
+        </TouchableOpacity>
+        {showDatePicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="default"
+            onChange={onDateChange}
+            textColor="#61DAFB"
+            style={styles.dateTime}
+          />
+        )}
+        <Text style={styles.dateText}>{`Expiration Date: ${date.toDateString()}`}</Text>
+        <TouchableOpacity onPress={submitFoodItem} style={styles.button}>
+          <Text style={styles.buttonText}>Submit</Text>
+        </TouchableOpacity>
+      </ScrollView>
+      {loading && (
+        <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />
       )}
-      <Text style={styles.dateText}>{`Expiration Date: ${date.toDateString()}`}</Text>
-      <TouchableOpacity onPress={submitFoodItem} style={styles.button}>
-        <Text style={styles.buttonText}>Submit</Text>
-      </TouchableOpacity>
-    </ScrollView>
+    </View>
   );
 };
 
@@ -223,4 +249,11 @@ const styles = StyleSheet.create({
       padding: 5,
       marginTop: 20,
     },
+    loadingIndicator: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      marginLeft: -12, // Half of the ActivityIndicator size
+      marginTop: -12, // Half of the ActivityIndicator size
+    },    
   });
