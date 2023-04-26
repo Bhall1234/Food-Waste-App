@@ -195,12 +195,80 @@ const PhotoScreen = () => {
 
 export default PhotoScreen;
 
+/*
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     paddingHorizontal: 32, // Increase the horizontal padding value (left and right)
     paddingVertical: 16, // Maintain the current vertical padding value (top and bottom)
   },  
+    imagePreview: {
+      width: 200,
+      height: 200,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: '#61DAFB',
+      borderRadius: 5,
+      width: '100%',
+      padding: 5,
+      marginTop: 20,
+      textAlign: 'center',
+    },
+    picker: {
+      width: '100%',
+      marginBottom: 20
+    },
+    button: {
+      backgroundColor: '#61DAFB',
+      padding: 10,
+      borderRadius: 5,
+      marginTop: 20,
+      marginBottom: 20,
+    },
+    buttonText: {
+      color: '#282C34',
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+    dateText: {
+      marginBottom: 40,
+    },
+    selectedCategoryText: {
+      marginTop: 10,
+      marginBottom: 20,
+    },
+    dateTime: {
+      marginTop: 20,
+      marginBottom: 20,
+    },
+    imageBorder: {
+      borderWidth: 1,
+      borderColor: '#61DAFB',
+      borderRadius: 5,
+      padding: 5,
+      marginTop: 20,
+    },
+    loadingIndicator: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      marginLeft: -12, // Half of the ActivityIndicator size
+      marginTop: -12, // Half of the ActivityIndicator size
+    },
+    scrollViewContent: {
+      paddingBottom: 16,
+    },    
+  });*/
+
+  
+  const styles = StyleSheet.create({
+    container: {
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 16,
+    },
     imagePreview: {
       width: 200,
       height: 200,
