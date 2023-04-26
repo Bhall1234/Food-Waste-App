@@ -16,6 +16,7 @@ import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { auth, firestore, storage } from '../firebase';
 import notificationManager from '../notificationManager';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 const PhotoScreen = () => {
   const route = useRoute();
@@ -28,19 +29,35 @@ const PhotoScreen = () => {
   const [date, setDate] = useState(new Date());
   const [loading, setLoading] = useState(false);
 
-  const uploadImageAndGetDownloadURL = async (imageUri) => {
-    const response = await fetch(imageUri);
-    const blob = await response.blob();
-  
-    const userId = auth.currentUser.uid;
-    const imageRef = ref(storage, `foodImages/${userId}/${Date.now()}`);
-  
-    await uploadBytes(imageRef, blob);
-    const downloadURL = await getDownloadURL(imageRef);
-  
-    return downloadURL;
+  const resizeImage = async (uri, width, height) => {
+    const result = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize: { width, height } }],
+      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    return result.uri;
   };
   
+  const uploadImageAndGetDownloadURL = async (imageUri) => {
+    try {
+      const resizedImageUri = await resizeImage(imageUri, 800, 600); // Resize the image to 800x600
+      const response = await fetch(resizedImageUri);
+      const blob = await response.blob();
+  
+      const userId = auth.currentUser.uid;
+      const imageRef = ref(storage, `foodImages/${userId}/${Date.now()}`);
+  
+      await uploadBytes(imageRef, blob);
+      const downloadURL = await getDownloadURL(imageRef);
+  
+      return downloadURL;
+    } catch (error) {
+      console.error('Error uploading image and getting download URL: ', error);
+      throw error;
+    }
+  };
+  
+
   const isDateExpired = (selectedDate) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -187,7 +204,9 @@ const PhotoScreen = () => {
         </TouchableOpacity>
       </ScrollView>
       {loading && (
-        <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
       )}
     </View>
   );
@@ -195,135 +214,71 @@ const PhotoScreen = () => {
 
 export default PhotoScreen;
 
-/*
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    paddingHorizontal: 32, // Increase the horizontal padding value (left and right)
-    paddingVertical: 16, // Maintain the current vertical padding value (top and bottom)
-  },  
-    imagePreview: {
-      width: 200,
-      height: 200,
-    },
-    input: {
-      borderWidth: 1,
-      borderColor: '#61DAFB',
-      borderRadius: 5,
-      width: '100%',
-      padding: 5,
-      marginTop: 20,
-      textAlign: 'center',
-    },
-    picker: {
-      width: '100%',
-      marginBottom: 20
-    },
-    button: {
-      backgroundColor: '#61DAFB',
-      padding: 10,
-      borderRadius: 5,
-      marginTop: 20,
-      marginBottom: 20,
-    },
-    buttonText: {
-      color: '#282C34',
-      fontWeight: 'bold',
-      fontSize: 16,
-    },
-    dateText: {
-      marginBottom: 40,
-    },
-    selectedCategoryText: {
-      marginTop: 10,
-      marginBottom: 20,
-    },
-    dateTime: {
-      marginTop: 20,
-      marginBottom: 20,
-    },
-    imageBorder: {
-      borderWidth: 1,
-      borderColor: '#61DAFB',
-      borderRadius: 5,
-      padding: 5,
-      marginTop: 20,
-    },
-    loadingIndicator: {
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      marginLeft: -12, // Half of the ActivityIndicator size
-      marginTop: -12, // Half of the ActivityIndicator size
-    },
-    scrollViewContent: {
-      paddingBottom: 16,
-    },    
-  });*/
-
-  
-  const styles = StyleSheet.create({
-    container: {
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: 16,
-    },
-    imagePreview: {
-      width: 200,
-      height: 200,
-    },
-    input: {
-      borderWidth: 1,
-      borderColor: '#61DAFB',
-      borderRadius: 5,
-      width: '100%',
-      padding: 5,
-      marginTop: 20,
-      textAlign: 'center',
-    },
-    picker: {
-      width: '100%',
-      marginBottom: 20
-    },
-    button: {
-      backgroundColor: '#61DAFB',
-      padding: 10,
-      borderRadius: 5,
-      marginTop: 20,
-      marginBottom: 20,
-    },
-    buttonText: {
-      color: '#282C34',
-      fontWeight: 'bold',
-      fontSize: 16,
-    },
-    dateText: {
-      marginBottom: 40,
-    },
-    selectedCategoryText: {
-      marginTop: 10,
-      marginBottom: 20,
-    },
-    dateTime: {
-      marginTop: 20,
-      marginBottom: 20,
-    },
-    imageBorder: {
-      borderWidth: 1,
-      borderColor: '#61DAFB',
-      borderRadius: 5,
-      padding: 5,
-      marginTop: 20,
-    },
-    loadingIndicator: {
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      marginLeft: -12, // Half of the ActivityIndicator size
-      marginTop: -12, // Half of the ActivityIndicator size
-    },
-    scrollViewContent: {
-      paddingBottom: 16,
-    },    
-  });
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+  },
+  imagePreview: {
+    width: 200,
+    height: 200,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#61DAFB',
+    borderRadius: 5,
+    width: '100%',
+    padding: 5,
+    marginTop: 20,
+    textAlign: 'center',
+  },
+  picker: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#61DAFB',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: '#282C34',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  dateText: {
+    marginBottom: 40,
+  },
+  selectedCategoryText: {
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  dateTime: {
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  imageBorder: {
+    borderWidth: 1,
+    borderColor: '#61DAFB',
+    borderRadius: 5,
+    padding: 5,
+    marginTop: 20,
+  },
+  scrollViewContent: {
+    paddingBottom: 16,
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Optional: Add a translucent white background
+  },
+});

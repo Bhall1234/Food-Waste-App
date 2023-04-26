@@ -7,7 +7,7 @@ const CameraScreen = ({ navigation }) => {
 
   const takePicture = async () => {
     if (cameraRef.current) {
-      const options = { quality: 0.5, base64: true, skipProcessing: true };
+      const options = { quality: 0.5 }; // Set the image quality to a value between 0 and 1
       const data = await cameraRef.current.takePictureAsync(options);
       const uri = data.uri;
       if (uri) {
