@@ -102,9 +102,9 @@ const PhotoScreen = () => {
       const triggerDate = new Date(date);
       triggerDate.setHours(triggerDate.getHours() - 6);
   
-      //const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
+      const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
 
-      const secondsToTrigger = 10; // To show Derek
+      //const secondsToTrigger = 10; // To show Derek
   
       const notificationId = await notificationManager.scheduleNotification(
           'Item Expiring Soon',
