@@ -89,7 +89,7 @@ const PhotoScreen = () => {
   
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      const notificationId =       await notificationManager.scheduleNotification(
+      const notificationId = await scheduleNotification(
         'Item Expiring Soon',
         `${title} will expire in 2 days. Please consume or dispose of it.`,
         {
@@ -106,7 +106,7 @@ const PhotoScreen = () => {
   
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      const notificationId = await notificationManager.scheduleNotification(
+      const notificationId = await scheduleNotification(
           'Item Expiring Soon',
           `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
         {
@@ -114,7 +114,6 @@ const PhotoScreen = () => {
           channelId: 'default',
         },
       );
-  
       return notificationId;
     }
   };
