@@ -104,33 +104,25 @@ const EditFoodItemScreen = () => {
       return;
     }
 
+    const notificationIdentifier = await sendExpiringItemNotifications();
+
     const updatedFoodItem = {
       title,
       category,
       image: foodItem.image,
       date: Timestamp.fromDate(date),
-      notificationIdentifier: await sendExpiringItemNotifications(), // Add the notification identifier to the new food item data
+      notificationIdentifier, // Add the notification identifier to the new food item data
     };
 
     try {
       await updateDoc(doc(firestore, 'foodItems', foodItem.id), updatedFoodItem);
       console.log('Food item added successfully');
       alert('Item added successfully!');
-      
-      // Send notifications for expiring items
-      //sendExpiringItemNotifications();
-
-      logScheduledNotifications();
   
       navigation.goBack();
     } catch (error) {
       console.error('Error adding food item: ', error);
     }
-  };
-
-  const logScheduledNotifications = async () => {
-    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-    console.log('Scheduled notifications:', scheduledNotifications);
   };
 
   return (
