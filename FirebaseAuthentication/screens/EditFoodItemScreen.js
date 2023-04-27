@@ -57,21 +57,18 @@ const EditFoodItemScreen = () => {
 
   const sendExpiringItemNotifications = async () => {
     const currentDate = new Date();
-    
+  
     // Calculate the difference in days between the expiry date and the current date
     const daysUntilExpiry = (date - currentDate) / (1000 * 60 * 60 * 24);
-
-    // Cancel any previously scheduled notifications
-    let notificationIdentifier = null;
   
     // Check if the item has more than 2 days until expiry
     if (daysUntilExpiry > 2) {
       const triggerDate = new Date(date);
       triggerDate.setDate(triggerDate.getDate() - 2);
-      
+  
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      await scheduleNotification(
+      const notificationId = await notificationManager.scheduleNotification(
         'Item Expiring Soon',
         `${title} will expire in 2 days. Please consume or dispose of it.`,
         {
@@ -79,7 +76,7 @@ const EditFoodItemScreen = () => {
           channelId: 'default', // Set the appropriate channelId if required
         }
       );
-      logScheduledNotifications();
+      return notificationId;
     } 
     else {
       // Schedule a notification to be triggered 6 hours before the item's expiration
@@ -88,17 +85,17 @@ const EditFoodItemScreen = () => {
   
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      await scheduleNotification(
-        'Item Expiring Soon',
-        `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
+      const notificationId = await notificationManager.scheduleNotification(
+          'Item Expiring Soon',
+          `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
         {
           seconds: secondsToTrigger,
           channelId: 'default',
-        }
+        },
       );
-      logScheduledNotifications();
+  
+      return notificationId;
     }
-    return notificationIdentifier;
   };
   
   const submitFoodItem = async () => {

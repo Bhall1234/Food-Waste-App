@@ -89,39 +89,35 @@ const PhotoScreen = () => {
   
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      const notificationId = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Item Expiring Soon',
-          body: `${title} will expire in 2 days. Please consume or dispose of it.`,
-        },
-        trigger: {
-          seconds: secondsToTrigger,
-        },
-      });
-  
+      const notificationId =       await notificationManager.scheduleNotification(
+        'Item Expiring Soon',
+        `${title} will expire in 2 days. Please consume or dispose of it.`,
+        {
+          seconds: secondsToTrigger, // Set the trigger seconds as a calculated number of seconds
+          channelId: 'default', // Set the appropriate channelId if required
+        }
+      );
       return notificationId;
-  
-    } else {
+    } 
+    else {
       // Schedule a notification to be triggered 6 hours before the item's expiration
       const triggerDate = new Date(date);
       triggerDate.setHours(triggerDate.getHours() - 6);
   
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      const notificationId = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Item Expiring Soon',
-          body: `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
-        },
-        trigger: {
+      const notificationId = await notificationManager.scheduleNotification(
+          'Item Expiring Soon',
+          `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
+        {
           seconds: secondsToTrigger,
+          channelId: 'default',
         },
-      });
+      );
   
       return notificationId;
     }
   };
-  
   
   const submitFoodItem = async () => {
     if (!title || !category) {
