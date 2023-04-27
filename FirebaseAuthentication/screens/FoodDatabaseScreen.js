@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, TextInput } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { collection, query, onSnapshot, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, query, onSnapshot, deleteDoc, doc, where, getDoc } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import { auth, firestore, storage } from '../firebase';
 import { getStorage, ref, deleteObject } from 'firebase/storage';
-import { cancelScheduledNotification } from '../notificationManager';
+import notificationManager from '../notificationManager';
 
 const FoodDatabaseScreen = () => {
   const navigation = useNavigation();
@@ -109,7 +109,7 @@ const FoodDatabaseScreen = () => {
   
       // Cancel the scheduled notification if it exists
       if (foodItemData.notificationIdentifier) {
-        await cancelScheduledNotification(foodItemData.notificationIdentifier);
+        await notificationManager.cancelScheduledNotification(foodItemData.notificationIdentifier);
       }
   
       // Delete the document from Firestore
