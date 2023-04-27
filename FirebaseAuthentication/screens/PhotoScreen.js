@@ -117,11 +117,6 @@ const PhotoScreen = () => {
     }
   };
 
-  const logScheduledNotifications = async () => {
-    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-    console.log('Scheduled notifications:', scheduledNotifications);
-  };
-  
   const submitFoodItem = async () => {
     if (!title || !category) {
       alert('Please enter a title and category for the food item.');
@@ -153,8 +148,7 @@ const PhotoScreen = () => {
       console.log('Food item added successfully');
       alert('Item added successfully!');
   
-      logScheduledNotifications();
-  
+    
       setLoading(false);
       navigation.goBack();
     } catch (error) {
