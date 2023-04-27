@@ -57,18 +57,20 @@ const EditFoodItemScreen = () => {
 
   const sendExpiringItemNotifications = async () => {
     const currentDate = new Date();
-    
+  
     // Calculate the difference in days between the expiry date and the current date
     const daysUntilExpiry = (date - currentDate) / (1000 * 60 * 60 * 24);
+  
+    let notificationIdentifier = null;
   
     // Check if the item has more than 2 days until expiry
     if (daysUntilExpiry > 2) {
       const triggerDate = new Date(date);
       triggerDate.setDate(triggerDate.getDate() - 2);
-      
+  
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      await notificationManager.scheduleNotification(
+      notificationIdentifier = await notificationManager.scheduleNotification(
         'Item Expiring Soon',
         `${title} will expire in 2 days. Please consume or dispose of it.`,
         {
@@ -83,7 +85,7 @@ const EditFoodItemScreen = () => {
   
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      await notificationManager.scheduleNotification(
+      notificationIdentifier = await notificationManager.scheduleNotification(
         'Item Expiring Soon',
         `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
         {
@@ -92,7 +94,10 @@ const EditFoodItemScreen = () => {
         }
       );
     }
+  
+    return notificationIdentifier;
   };
+  
   
   const submitFoodItem = async () => {
     if (!title || !category) {

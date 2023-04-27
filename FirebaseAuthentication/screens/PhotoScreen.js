@@ -77,18 +77,20 @@ const PhotoScreen = () => {
 
   const sendExpiringItemNotifications = async () => {
     const currentDate = new Date();
-    
+  
     // Calculate the difference in days between the expiry date and the current date
     const daysUntilExpiry = (date - currentDate) / (1000 * 60 * 60 * 24);
+  
+    let notificationIdentifier = null;
   
     // Check if the item has more than 2 days until expiry
     if (daysUntilExpiry > 2) {
       const triggerDate = new Date(date);
       triggerDate.setDate(triggerDate.getDate() - 2);
-      
+  
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      await notificationManager.scheduleNotification(
+      notificationIdentifier = await notificationManager.scheduleNotification(
         'Item Expiring Soon',
         `${title} will expire in 2 days. Please consume or dispose of it.`,
         {
@@ -103,7 +105,7 @@ const PhotoScreen = () => {
   
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      await notificationManager.scheduleNotification(
+      notificationIdentifier = await notificationManager.scheduleNotification(
         'Item Expiring Soon',
         `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
         {
@@ -112,6 +114,8 @@ const PhotoScreen = () => {
         }
       );
     }
+  
+    return notificationIdentifier;
   };
   
   const submitFoodItem = async () => {
@@ -129,20 +133,21 @@ const PhotoScreen = () => {
       // Get the current user's ID
       const userId = auth.currentUser.uid;
   
+      // Get the notification identifier
+      const notificationIdentifier = await sendExpiringItemNotifications();
+  
       const newFoodItem = {
         title,
         category,
         image: imageUrl, // Use the download URL instead of the local image URI
         date: Timestamp.fromDate(date),
         userId, // Add the user ID to the new food item data
+        notificationIdentifier, // Add the notification identifier to the new food item data
       };
   
       await addDoc(collection(firestore, 'foodItems'), newFoodItem);
       console.log('Food item added successfully');
       alert('Item added successfully!');
-  
-      // Send notifications for expiring items
-      sendExpiringItemNotifications();
   
       setLoading(false);
       navigation.goBack();
@@ -151,6 +156,7 @@ const PhotoScreen = () => {
       setLoading(false);
     }
   };
+  
   
   return (
     <View style={styles.container}>

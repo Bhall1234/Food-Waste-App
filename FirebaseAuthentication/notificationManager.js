@@ -3,7 +3,6 @@ import * as Notifications from 'expo-notifications';
 
 // Check for the notification permissions
 const requestNotificationPermission = async () => {
-
   if (Platform.OS !== 'web') {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
@@ -25,10 +24,12 @@ const requestNotificationPermission = async () => {
   return true;
 };
 
-// Schedule the notification
+// Schedule the notification and return its identifier
 const scheduleNotification = async (title, body, trigger) => {
+  let identifier = null;
+
   if (await requestNotificationPermission()) {
-    await Notifications.scheduleNotificationAsync({
+    identifier = await Notifications.scheduleNotificationAsync({
       content: {
         title: title,
         body: body,
@@ -36,8 +37,21 @@ const scheduleNotification = async (title, body, trigger) => {
       trigger: trigger,
     });
   }
+
+  return identifier;
+};
+
+// Cancel a scheduled notification by its identifier
+const cancelScheduledNotification = async (identifier) => {
+  try {
+    await Notifications.cancelScheduledNotificationAsync(identifier);
+    console.log(`Notification with identifier ${identifier} canceled successfully.`);
+  } catch (error) {
+    console.error('Error canceling scheduled notification: ', error);
+  }
 };
 
 export default {
   scheduleNotification,
+  cancelScheduledNotification,
 };
