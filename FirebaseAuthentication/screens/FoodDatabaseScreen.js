@@ -4,6 +4,7 @@ import { collection, query, onSnapshot, deleteDoc, doc, where } from 'firebase/f
 import { useNavigation } from '@react-navigation/native';
 import { auth, firestore, storage } from '../firebase';
 import { getStorage, ref, deleteObject } from 'firebase/storage';
+import { cancelScheduledNotification } from '../notificationManager';
 
 const FoodDatabaseScreen = () => {
   const navigation = useNavigation();
@@ -101,14 +102,27 @@ const FoodDatabaseScreen = () => {
 
   const deleteFoodItem = async (id, imageUrl) => {
     try {
+      // Get the food item document and its data
+      const foodItemDocRef = doc(firestore, 'foodItems', id);
+      const foodItemDoc = await getDoc(foodItemDocRef);
+      const foodItemData = foodItemDoc.data();
+  
+      // Cancel the scheduled notification if it exists
+      if (foodItemData.notificationIdentifier) {
+        await cancelScheduledNotification(foodItemData.notificationIdentifier);
+      }
+  
+      // Delete the document from Firestore
       await deleteDoc(doc(firestore, 'foodItems', id));
+      
+      // Delete the image from Firebase Storage
       await deleteImageFromStorage(imageUrl);
+  
     } catch (error) {
       console.error('Error deleting document:', error);
     }
   };
   
-
   const getItemsExpiringInTwoDays = () => {
     const currentDate = new Date();
     const twoDaysFromNow = new Date();

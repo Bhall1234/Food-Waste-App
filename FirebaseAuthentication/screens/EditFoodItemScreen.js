@@ -14,7 +14,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { auth } from '../firebase';
 import { firestore } from '../firebase';
 import { updateDoc, doc, Timestamp } from 'firebase/firestore';
-import notificationManager from '../notificationManager';
+import { scheduleNotification} from '../notificationManager';
 
 const EditFoodItemScreen = () => {
   const route = useRoute();
@@ -60,6 +60,9 @@ const EditFoodItemScreen = () => {
     
     // Calculate the difference in days between the expiry date and the current date
     const daysUntilExpiry = (date - currentDate) / (1000 * 60 * 60 * 24);
+
+    // Cancel any previously scheduled notifications
+    let notificationIdentifier = null;
   
     // Check if the item has more than 2 days until expiry
     if (daysUntilExpiry > 2) {
@@ -68,7 +71,7 @@ const EditFoodItemScreen = () => {
       
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      await notificationManager.scheduleNotification(
+      await scheduleNotification(
         'Item Expiring Soon',
         `${title} will expire in 2 days. Please consume or dispose of it.`,
         {
@@ -76,14 +79,16 @@ const EditFoodItemScreen = () => {
           channelId: 'default', // Set the appropriate channelId if required
         }
       );
-    } else {
+      logScheduledNotifications();
+    } 
+    else {
       // Schedule a notification to be triggered 6 hours before the item's expiration
       const triggerDate = new Date(date);
       triggerDate.setHours(triggerDate.getHours() - 6);
   
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      await notificationManager.scheduleNotification(
+      await scheduleNotification(
         'Item Expiring Soon',
         `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
         {
@@ -91,7 +96,9 @@ const EditFoodItemScreen = () => {
           channelId: 'default',
         }
       );
+      logScheduledNotifications();
     }
+    return notificationIdentifier;
   };
   
   const submitFoodItem = async () => {
@@ -105,6 +112,7 @@ const EditFoodItemScreen = () => {
       category,
       image: foodItem.image,
       date: Timestamp.fromDate(date),
+      notificationIdentifier: await sendExpiringItemNotifications(), // Add the notification identifier to the new food item data
     };
 
     try {
@@ -114,11 +122,18 @@ const EditFoodItemScreen = () => {
       
       // Send notifications for expiring items
       sendExpiringItemNotifications();
+
+      logScheduledNotifications();
   
       navigation.goBack();
     } catch (error) {
       console.error('Error adding food item: ', error);
     }
+  };
+
+  const logScheduledNotifications = async () => {
+    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
+    console.log('Scheduled notifications:', scheduledNotifications);
   };
 
   return (

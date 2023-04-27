@@ -14,9 +14,10 @@ import { Picker } from '@react-native-picker/picker';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { auth, firestore, storage } from '../firebase';
-import notificationManager from '../notificationManager';
+import { scheduleNotification } from '../notificationManager';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import * as ImageManipulator from 'expo-image-manipulator';
+import * as Notifications from 'expo-notifications';
 
 const PhotoScreen = () => {
   const route = useRoute();
@@ -77,7 +78,7 @@ const PhotoScreen = () => {
 
   const sendExpiringItemNotifications = async () => {
     const currentDate = new Date();
-    
+  
     // Calculate the difference in days between the expiry date and the current date
     const daysUntilExpiry = (date - currentDate) / (1000 * 60 * 60 * 24);
   
@@ -85,17 +86,21 @@ const PhotoScreen = () => {
     if (daysUntilExpiry > 2) {
       const triggerDate = new Date(date);
       triggerDate.setDate(triggerDate.getDate() - 2);
-      
+  
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      await notificationManager.scheduleNotification(
-        'Item Expiring Soon',
-        `${title} will expire in 2 days. Please consume or dispose of it.`,
-        {
-          seconds: secondsToTrigger, // Set the trigger seconds as a calculated number of seconds
-          channelId: 'default', // Set the appropriate channelId if required
-        }
-      );
+      const notificationId = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Item Expiring Soon',
+          body: `${title} will expire in 2 days. Please consume or dispose of it.`,
+        },
+        trigger: {
+          seconds: secondsToTrigger,
+        },
+      });
+  
+      return notificationId;
+  
     } else {
       // Schedule a notification to be triggered 6 hours before the item's expiration
       const triggerDate = new Date(date);
@@ -103,16 +108,20 @@ const PhotoScreen = () => {
   
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      await notificationManager.scheduleNotification(
-        'Item Expiring Soon',
-        `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
-        {
+      const notificationId = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Item Expiring Soon',
+          body: `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
+        },
+        trigger: {
           seconds: secondsToTrigger,
-          channelId: 'default',
-        }
-      );
+        },
+      });
+  
+      return notificationId;
     }
   };
+  
   
   const submitFoodItem = async () => {
     if (!title || !category) {
@@ -135,6 +144,7 @@ const PhotoScreen = () => {
         image: imageUrl, // Use the download URL instead of the local image URI
         date: Timestamp.fromDate(date),
         userId, // Add the user ID to the new food item data
+        notificationIdentifier: await sendExpiringItemNotifications(), // Add the notification identifier to the new food item data
       };
   
       await addDoc(collection(firestore, 'foodItems'), newFoodItem);
@@ -143,6 +153,8 @@ const PhotoScreen = () => {
   
       // Send notifications for expiring items
       sendExpiringItemNotifications();
+
+      logScheduledNotifications();
   
       setLoading(false);
       navigation.goBack();
@@ -150,6 +162,11 @@ const PhotoScreen = () => {
       console.error('Error adding food item: ', error);
       setLoading(false);
     }
+  };
+
+  const logScheduledNotifications = async () => {
+    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
+    console.log('Scheduled notifications:', scheduledNotifications);
   };
   
   return (

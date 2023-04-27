@@ -25,10 +25,12 @@ const requestNotificationPermission = async () => {
   return true;
 };
 
-// Schedule the notification
+// Schedule the notification and return its identifier
 const scheduleNotification = async (title, body, trigger) => {
+  let identifier = null;
+
   if (await requestNotificationPermission()) {
-    await Notifications.scheduleNotificationAsync({
+    identifier = await Notifications.scheduleNotificationAsync({
       content: {
         title: title,
         body: body,
@@ -36,8 +38,16 @@ const scheduleNotification = async (title, body, trigger) => {
       trigger: trigger,
     });
   }
+
+  return identifier;
+};
+
+// Cancel a scheduled notification by its identifier
+const cancelScheduledNotification = async (identifier) => {
+  await Notifications.cancelScheduledNotificationAsync(identifier);
 };
 
 export default {
   scheduleNotification,
+  cancelScheduledNotification,
 };
