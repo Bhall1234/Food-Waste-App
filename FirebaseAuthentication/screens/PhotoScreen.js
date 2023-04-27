@@ -14,10 +14,9 @@ import { Picker } from '@react-native-picker/picker';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { auth, firestore, storage } from '../firebase';
-import { scheduleNotification } from '../notificationManager';
+import notificationManager from '../notificationManager';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import * as ImageManipulator from 'expo-image-manipulator';
-import * as Notifications from 'expo-notifications';
 
 const PhotoScreen = () => {
   const route = useRoute();
@@ -88,7 +87,7 @@ const PhotoScreen = () => {
   
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      const notificationId = await scheduleNotification(
+      const notificationId = await notificationManager.scheduleNotification(
         'Item Expiring Soon',
         `${title} will expire in 2 days. Please consume or dispose of it.`,
         {
@@ -105,7 +104,7 @@ const PhotoScreen = () => {
   
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      const notificationId = await scheduleNotification(
+      const notificationId = await notificationManager.scheduleNotification(
           'Item Expiring Soon',
           `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
         {
@@ -148,7 +147,6 @@ const PhotoScreen = () => {
       console.log('Food item added successfully');
       alert('Item added successfully!');
   
-    
       setLoading(false);
       navigation.goBack();
     } catch (error) {
@@ -156,7 +154,6 @@ const PhotoScreen = () => {
       setLoading(false);
     }
   };
-  
   
   return (
     <View style={styles.container}>

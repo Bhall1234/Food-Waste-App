@@ -14,7 +14,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { auth } from '../firebase';
 import { firestore } from '../firebase';
 import { updateDoc, doc, Timestamp } from 'firebase/firestore';
-import { scheduleNotification } from '../notificationManager';
+import notificationManager from '../notificationManager';
 
 const EditFoodItemScreen = () => {
   const route = useRoute();
@@ -68,7 +68,7 @@ const EditFoodItemScreen = () => {
   
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      const notificationId = await scheduleNotification(
+      const notificationId = await notificationManager.scheduleNotification(
         'Item Expiring Soon',
         `${title} will expire in 2 days. Please consume or dispose of it.`,
         {
@@ -85,7 +85,7 @@ const EditFoodItemScreen = () => {
   
       const secondsToTrigger = (triggerDate.getTime() - currentDate.getTime()) / 1000;
   
-      const notificationId = await scheduleNotification(
+      const notificationId = await notificationManager.scheduleNotification(
           'Item Expiring Soon',
           `${title} will expire in ${Math.ceil(daysUntilExpiry)} day(s). Please consume or dispose of it.`,
         {
