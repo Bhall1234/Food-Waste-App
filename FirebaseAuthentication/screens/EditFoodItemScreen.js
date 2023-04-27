@@ -28,6 +28,7 @@ const EditFoodItemScreen = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(foodItem.date.toDate());
   const [isEditable, setIsEditable] = useState(false);
+  const [oldNotificationIdentifier, setOldNotificationIdentifier] = useState(foodItem.notificationIdentifier);
 
   useEffect(() => {
     if (userId === foodItem.userId) {
@@ -97,15 +98,23 @@ const EditFoodItemScreen = () => {
       return notificationId;
     }
   };
-  
+
   const submitFoodItem = async () => {
     if (!title || !category) {
       alert('Please enter a title and category for the food item.');
       return;
     }
-
-    const notificationIdentifier = await sendExpiringItemNotifications();
-
+  
+    let notificationIdentifier = oldNotificationIdentifier;
+  
+    // Cancel the old notification and schedule a new one only if the date has changed
+    if (foodItem.date.toDate().getTime() !== date.getTime()) {
+      if (oldNotificationIdentifier) {
+        await notificationManager.cancelScheduledNotification(oldNotificationIdentifier);
+      }
+      notificationIdentifier = await sendExpiringItemNotifications();
+    }
+  
     const updatedFoodItem = {
       title,
       category,
@@ -113,10 +122,10 @@ const EditFoodItemScreen = () => {
       date: Timestamp.fromDate(date),
       notificationIdentifier, // Add the notification identifier to the new food item data
     };
-
+  
     try {
       await updateDoc(doc(firestore, 'foodItems', foodItem.id), updatedFoodItem);
-      console.log('Food item added successfully');
+      console.log('Food item updated successfully');
       alert('Item added successfully!');
   
       navigation.goBack();
@@ -124,7 +133,7 @@ const EditFoodItemScreen = () => {
       console.error('Error adding food item: ', error);
     }
   };
-
+  
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.imageBorder}>
