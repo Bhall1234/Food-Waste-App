@@ -99,17 +99,15 @@ const FoodDatabaseScreen = () => {
     setShowCategories(!showCategories);
   };
 
-  const deleteFoodItem = async (id, imagePath) => {
+  const deleteFoodItem = async (id, imageUrl) => {
     try {
-      // First, delete the image associated with the food item
-      await deleteImageFromStorage(imagePath);
-  
-      // Then, delete the food item document from Firestore
       await deleteDoc(doc(firestore, 'foodItems', id));
+      await deleteImageFromStorage(imageUrl);
     } catch (error) {
       console.error('Error deleting document:', error);
     }
   };
+  
 
   const getItemsExpiringInTwoDays = () => {
     const currentDate = new Date();
@@ -129,16 +127,16 @@ const FoodDatabaseScreen = () => {
     setShowColorKey(!showColorKey);
   };
 
-const deleteImageFromStorage = async (imageUrl) => {
-  try {
-    const imagePath = imageUrl.replace(/^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/[^\/]*\//, '');
-    const imageRef = ref(storage, imagePath);
-    await deleteObject(imageRef);
-    console.log('Image deleted from Firebase Storage:', imagePath);
-  } catch (error) {
-    console.error('Error deleting image from Firebase Storage:', error);
-  }
-};
+  const deleteImageFromStorage = async (imageUrl) => {
+    try {
+      const imagePath = imageUrl.split('/o/')[1].split('?')[0];
+      const imageRef = ref(storage, decodeURIComponent(imagePath));
+      await deleteObject(imageRef);
+      console.log('Image deleted from Firebase Storage:', imagePath);
+    } catch (error) {
+      console.error('Error deleting image from Firebase Storage:', error);
+    }
+  };
   
   const ColorKey = () => {
     return (
@@ -213,8 +211,8 @@ const deleteImageFromStorage = async (imageUrl) => {
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.category}>Category: {item.category}</Text>
             <Text style={styles.date}>Expiration Date: {item.date.toDate().toDateString()}</Text>
-            <TouchableOpacity onPress={() => deleteFoodItem(item.id, item.imagePath)} style={styles.deleteButton}>
-            <Text style={styles.deleteButtonText}>Delete</Text>
+            <TouchableOpacity onPress={() => deleteFoodItem(item.id, item.image)} style={styles.deleteButton}>
+              <Text style={styles.deleteButtonText}>Delete</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigateToEditFoodItem(item)} style={styles.editButton}>
               <Text style={styles.editButtonText}>Edit</Text>
