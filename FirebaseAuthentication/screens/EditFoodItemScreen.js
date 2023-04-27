@@ -118,7 +118,7 @@ const EditFoodItemScreen = () => {
       alert('Item added successfully!');
       
       // Send notifications for expiring items
-      sendExpiringItemNotifications();
+      //sendExpiringItemNotifications();
 
       logScheduledNotifications();
   

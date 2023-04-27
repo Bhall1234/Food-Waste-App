@@ -58,7 +58,6 @@ const PhotoScreen = () => {
     }
   };
   
-
   const isDateExpired = (selectedDate) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -117,6 +116,11 @@ const PhotoScreen = () => {
       return notificationId;
     }
   };
+
+  const logScheduledNotifications = async () => {
+    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
+    console.log('Scheduled notifications:', scheduledNotifications);
+  };
   
   const submitFoodItem = async () => {
     if (!title || !category) {
@@ -133,22 +137,22 @@ const PhotoScreen = () => {
       // Get the current user's ID
       const userId = auth.currentUser.uid;
   
+      // Schedule the notification and get its identifier
+      const notificationIdentifier = await sendExpiringItemNotifications();
+  
       const newFoodItem = {
         title,
         category,
         image: imageUrl, // Use the download URL instead of the local image URI
         date: Timestamp.fromDate(date),
         userId, // Add the user ID to the new food item data
-        notificationIdentifier: await sendExpiringItemNotifications(), // Add the notification identifier to the new food item data
+        notificationIdentifier, // Add the notification identifier to the new food item data
       };
   
       await addDoc(collection(firestore, 'foodItems'), newFoodItem);
       console.log('Food item added successfully');
       alert('Item added successfully!');
   
-      // Send notifications for expiring items
-      sendExpiringItemNotifications();
-
       logScheduledNotifications();
   
       setLoading(false);
@@ -158,11 +162,7 @@ const PhotoScreen = () => {
       setLoading(false);
     }
   };
-
-  const logScheduledNotifications = async () => {
-    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-    console.log('Scheduled notifications:', scheduledNotifications);
-  };
+  
   
   return (
     <View style={styles.container}>
