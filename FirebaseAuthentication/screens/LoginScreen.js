@@ -36,38 +36,47 @@ const LoginScreen = () => {
     
     // Handle the login and register
     const handleSignup = async () => {
-        setLoading(true);
-        setError('');
-        try {
-            // Create a new user account
-            const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredentials.user;
-            console.log('Registered with: ', user.email);
-        } catch (error) {
-            setError(error.message);
-        }
-        setLoading(false);
-    }
+      setLoading(true);
+      setError('');
+      const startTime = performance.now();
+      try {
+          // Create a new user account
+          const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredentials.user;
+          console.log('Registered with: ', user.email);
+      } catch (error) {
+          setError(error.message);
+      }
+      setLoading(false);
+      const endTime = performance.now();
+      console.log(`Signup time: ${endTime - startTime} ms`);
+  }
 
     // Handle the login and register
     const handleLogin = async () => {
-        setLoading(true);
-        setError('');
-        try {
-            // login with email and password
-            const userCredentials = await signInWithEmailAndPassword(auth, email, password);
-            const user = userCredentials.user;
-            console.log('Logged in with: ', user.email);
-        } catch (error) {
-            setError(error.message);
-        }
-        setLoading(false);
-    }
+      setLoading(true);
+      setError('');
+      const startTime = performance.now();
+      try {
+          // login with email and password
+          const userCredentials = await signInWithEmailAndPassword(auth, email, password);
+          const user = userCredentials.user;
+          console.log('Logged in with: ', user.email);
+      } catch (error) {
+          setError(error.message);
+      }
+      setLoading(false);
+      const endTime = performance.now();
+      console.log(`Login time: ${endTime - startTime} ms`);
+  }
 
     // Handle the password 
     const handlePasswordReset = async () => {
+      const startTime = performance.now();
       navigation.navigate('Password Reset');
-    };
+      const endTime = performance.now();
+      console.log(`Password Reset navigation time: ${endTime - startTime} ms`);
+  };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="height">

@@ -39,6 +39,8 @@ const FoodDatabaseScreen = () => {
   }, []);
 
   const filterFoodItems = (searchText) => {
+    const startTime = performance.now(); 
+  
     setSearch(searchText);
     if (searchText.length === 0) {
       setFilteredFoodItems(foodItems);
@@ -48,7 +50,11 @@ const FoodDatabaseScreen = () => {
       );
       setFilteredFoodItems(filteredItems);
     }
+  
+    const endTime = performance.now(); 
+    console.log(`Filtering food items took ${endTime - startTime} ms`);
   };
+  
 
   const isExpired = (itemDate) => {
     const currentDate = new Date();
@@ -101,6 +107,7 @@ const FoodDatabaseScreen = () => {
   };
 
   const deleteFoodItem = async (id, imageUrl) => {
+    const startTime = performance.now(); 
     try {
       // Get the food item document and its data
       const foodItemDocRef = doc(firestore, 'foodItems', id);
@@ -121,6 +128,8 @@ const FoodDatabaseScreen = () => {
     } catch (error) {
       console.error('Error deleting document:', error);
     }
+    const endTime = performance.now();
+    console.log(`Deleting food item took ${endTime - startTime} ms`);
   };
   
   const getItemsExpiringInTwoDays = () => {

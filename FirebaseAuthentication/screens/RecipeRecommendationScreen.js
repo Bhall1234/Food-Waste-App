@@ -16,6 +16,8 @@ const RecipeRecommendationScreen = () => {
   }, []);
 
   const fetchRecipes = async () => {
+    const startTime = performance.now();
+
     // Fetch the ingredients from the user's virtual pantry
     const userId = auth.currentUser ? auth.currentUser.uid : null;
     const foodItemsRef = collection(firestore, 'foodItems');
@@ -33,13 +35,21 @@ const RecipeRecommendationScreen = () => {
       console.log('User pantry not found');
     }
     console.log("Recipes fetched");
+
+    const endTime = performance.now(); 
+    console.log(`fetchRecipes took ${endTime - startTime} milliseconds`); // Log the time it took to execute the function
   };
 
   const handleRecipePress = async (recipeId) => {
+    const startTime = performance.now();
+
     setLoading(true);
     const recipeDetails = await fetchRecipeDetails(recipeId);
     setSelectedRecipe(recipeDetails);
     setLoading(false);
+
+    const endTime = performance.now(); 
+    console.log(`handleRecipePress took ${endTime - startTime} milliseconds`); 
   };
 
   const renderRecipe = ({ item }) => (

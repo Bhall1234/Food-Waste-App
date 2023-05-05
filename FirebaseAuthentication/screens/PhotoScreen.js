@@ -40,6 +40,7 @@ const PhotoScreen = () => {
   
   const uploadImageAndGetDownloadURL = async (imageUri) => {
     try {
+      const startTime = performance.now();
       const resizedImageUri = await resizeImage(imageUri, 800, 600); // Resize the image to 800x600
       const response = await fetch(resizedImageUri);
       const blob = await response.blob();
@@ -49,7 +50,10 @@ const PhotoScreen = () => {
   
       await uploadBytes(imageRef, blob);
       const downloadURL = await getDownloadURL(imageRef);
-  
+      
+      const endTime = performance.now();
+      console.log(`Uploading image and getting download URL took ${endTime - startTime} ms.`);
+
       return downloadURL;
     } catch (error) {
       console.error('Error uploading image and getting download URL: ', error);
@@ -75,6 +79,7 @@ const PhotoScreen = () => {
   };
 
   const sendExpiringItemNotifications = async () => {
+    const startTime = performance.now();
     const currentDate = new Date();
   
     // Calculate the difference in days between the expiry date and the current date
@@ -95,6 +100,8 @@ const PhotoScreen = () => {
           channelId: 'default', // Set the appropriate channelId if required
         }
       );
+      const endTime = performance.now();
+      console.log(`Submitting notification took ${endTime - startTime} ms.`);
       return notificationId;
     } 
     else {
@@ -114,6 +121,8 @@ const PhotoScreen = () => {
           channelId: 'default',
         },
       );
+      const endTime = performance.now();
+      console.log(`Submitting notification took ${endTime - startTime} ms.`);
       return notificationId;
     }
   };
@@ -127,6 +136,7 @@ const PhotoScreen = () => {
     setLoading(true);
   
     try {
+      const startTime = performance.now();
       // Upload the image to Firebase Storage and get the download URL
       const imageUrl = await uploadImageAndGetDownloadURL(image);
   
@@ -146,6 +156,10 @@ const PhotoScreen = () => {
       };
   
       await addDoc(collection(firestore, 'foodItems'), newFoodItem);
+
+      const endTime = performance.now();
+      console.log(`Submitting food item took ${endTime - startTime} ms.`);
+
       console.log('Food item added successfully');
       alert('Item added successfully!');
   
