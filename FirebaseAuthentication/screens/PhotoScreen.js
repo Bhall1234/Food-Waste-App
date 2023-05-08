@@ -299,6 +299,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Optional: Add a translucent white background
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
   },
 });
